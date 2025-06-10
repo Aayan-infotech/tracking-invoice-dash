@@ -33,7 +33,7 @@ function Task() {
     try {
       setLoading(true);
       const response = await fetchWithAuth(
-        `${import.meta.env.VITE_REACT_APP_API_URL}projects/project-dropdown`,
+        `http://18.209.91.97:3333/api/projects/project-dropdown`,
         {
           method: "GET",
         }
@@ -50,7 +50,7 @@ function Task() {
     try {
       setLoading(true);
       const response = await fetchWithAuth(
-        `${import.meta.env.VITE_REACT_APP_API_URL}/projects/tasks`,
+        `http://18.209.91.97:3333/api//projects/tasks`,
         {
           method: "GET",
           params: {
@@ -120,7 +120,7 @@ function Task() {
     try {
       setDisabled(true);
       const result = await axios.post(
-        `${import.meta.env.VITE_REACT_APP_API_URL}projects/tasks`,
+        `http://18.209.91.97:3333/api/projects/tasks`,
         {
           taskName: taskData.taskName,
           projectId: taskData.projectId,
@@ -185,7 +185,7 @@ function Task() {
     try {
       setDisabled(true);
       const result = await axios.put(
-        `${import.meta.env.VITE_REACT_APP_API_URL}projects/tasks/${
+        `http://18.209.91.97:3333/api/projects/tasks/${
           taskData.id
         }`,
         {
@@ -235,7 +235,7 @@ function Task() {
       if (result.isConfirmed) {
         try {
           const response = await axios.delete(
-            `${import.meta.env.VITE_REACT_APP_API_URL}projects/tasks/${taskId}`,
+            `http://18.209.91.97:3333/api/projects/tasks/${taskId}`,
             {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("authToken")}`,

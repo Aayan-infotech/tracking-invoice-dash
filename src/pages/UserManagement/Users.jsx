@@ -35,7 +35,7 @@ const Users = () => {
     try {
       setLoading(true);
       const response = await fetchWithAuth(
-        `${import.meta.env.VITE_REACT_APP_API_URL}users/get-all-users`,
+        `http://18.209.91.97:3333/api/users/get-all-users`,
         {
           method: "GET",
           params: {

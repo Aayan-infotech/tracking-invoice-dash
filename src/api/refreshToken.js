@@ -4,7 +4,7 @@ import { Navigate } from "react-router-dom";
 export const refreshAccessToken = async () => {
   try {
     const response = await axios.post(
-      `${import.meta.env.VITE_REACT_APP_API_URL}auth/refresh-token`,
+      `http://18.209.91.97:3333/api/auth/refresh-token`,
       {
         refreshToken: localStorage.getItem("refreshToken"),
       }

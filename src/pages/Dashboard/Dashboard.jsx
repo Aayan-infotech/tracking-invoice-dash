@@ -24,7 +24,7 @@ export default function Page() {
   const fetchDetails = async () => {
     try {
       const response = await fetchWithAuth(
-        `${import.meta.env.VITE_REACT_APP_API_URL}users/dashboard`,
+        `http://18.209.91.97:3333/api/users/dashboard`,
         {
           method: "GET",
         }
@@ -59,21 +59,7 @@ export default function Page() {
     },
   ];
 
-  // const barData = [
-  //   { name: "Jan", users: 400 },
-  //   { name: "Feb", users: 600 },
-  //   { name: "Mar", users: 900 },
-  //   { name: "Apr", users: 700 },
-  //   { name: "May", users: 1100 },
-  // ];
 
-  // const pieData = [
-  //   { name: "Retail", value: 40 },
-  //   { name: "Services", value: 25 },
-  //   { name: "Restaurants", value: 35 },
-  // ];
-
-  // const COLORS = ["#4e73df", "#1cc88a", "#36b9cc"];
 
   return (
     <div className="dashboard-wrapper d-flex">

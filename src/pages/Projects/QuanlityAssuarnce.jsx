@@ -34,7 +34,7 @@ function QualityAssurance() {
     try {
       setLoading(true);
       const response = await fetchWithAuth(
-        `${import.meta.env.VITE_REACT_APP_API_URL}projects/project-dropdown`,
+        `http://18.209.91.97:3333/api/projects/project-dropdown`,
         {
           method: "GET",
         }
@@ -48,7 +48,7 @@ function QualityAssurance() {
   const fetchDocument = async () => {
     try {
       const response = await fetchWithAuth(
-        `${import.meta.env.VITE_REACT_APP_API_URL}projects/quality-assurance`,
+        `http://18.209.91.97:3333/api/projects/quality-assurance`,
         {
           method: "GET",
         }
@@ -123,7 +123,7 @@ function QualityAssurance() {
 
       if (result.isConfirmed) {
         const response = await axios.delete(
-          `${import.meta.env.VITE_REACT_APP_API_URL}projects/quality-assurance/${documentId}`,
+          `http://18.209.91.97:3333/api/projects/quality-assurance/${documentId}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("authToken")}`,
@@ -190,7 +190,7 @@ function QualityAssurance() {
     };
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_REACT_APP_API_URL}projects/quality-assurance`,
+        `http://18.209.91.97:3333/api/projects/quality-assurance`,
         data,
         {
           headers: {
@@ -228,7 +228,7 @@ function QualityAssurance() {
 
     try {
       const response = await axios.put(
-        `${import.meta.env.VITE_REACT_APP_API_URL}projects/quality-assurance/${formData._id}`,
+        `http://18.209.91.97:3333/api/projects/quality-assurance/${formData._id}`,
         data,
         {
           headers: {

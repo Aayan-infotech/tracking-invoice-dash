@@ -34,7 +34,7 @@ function AssignTasks() {
     try {
       setLoading(true);
       const response = await fetchWithAuth(
-        `${import.meta.env.VITE_REACT_APP_API_URL}projects/project-dropdown`,
+        `http://18.209.91.97:3333/api/projects/project-dropdown`,
         {
           method: "GET",
         }
@@ -49,7 +49,7 @@ function AssignTasks() {
     try {
       setLoading(true);
       const response = await fetchWithAuth(
-        `${import.meta.env.VITE_REACT_APP_API_URL}users/all-verified-users`,
+        `http://18.209.91.97:3333/api/users/all-verified-users`,
         {
           method: "GET",
         }
@@ -64,7 +64,7 @@ function AssignTasks() {
   const fetchTasks = async (projectId) => {
     try {
       const response = await fetchWithAuth(
-        `${import.meta.env.VITE_REACT_APP_API_URL}projects/tasks/${projectId}`,
+        `http://18.209.91.97:3333/api/projects/tasks/${projectId}`,
         {
           method: "GET",
         }
@@ -80,7 +80,7 @@ function AssignTasks() {
     try {
       setLoading(true);
       const response = await fetchWithAuth(
-        `${import.meta.env.VITE_REACT_APP_API_URL}projects/assign-tasks`,
+        `http://18.209.91.97:3333/api/projects/assign-tasks`,
         {
           method: "GET",
           params: {
@@ -169,7 +169,7 @@ function AssignTasks() {
     try {
       setDisabled(true);
       const result = await axios.post(
-        `${import.meta.env.VITE_REACT_APP_API_URL}projects/assign-tasks`,
+        `http://18.209.91.97:3333/api/projects/assign-tasks`,
         {
           projectId: formData.projectId,
           userId: formData.userId,
@@ -229,7 +229,7 @@ function AssignTasks() {
     try {
       setDisabled(true);
       const result = await axios.put(
-        `${import.meta.env.VITE_REACT_APP_API_URL}projects/assign-tasks/${
+        `http://18.209.91.97:3333/api/projects/assign-tasks/${
           formData.id
         }`,
         {
@@ -273,7 +273,7 @@ function AssignTasks() {
       if (result.isConfirmed) {
         try {
           const response = await axios.delete(
-            `${import.meta.env.VITE_REACT_APP_API_URL}projects/assign-tasks/${assignedTaskId}`,
+            `http://18.209.91.97:3333/api/projects/assign-tasks/${assignedTaskId}`,
             {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("authToken")}`,

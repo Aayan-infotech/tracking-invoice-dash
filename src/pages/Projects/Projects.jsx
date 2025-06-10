@@ -31,7 +31,7 @@ function Projects() {
     try {
       setLoading(true);
       const response = await fetchWithAuth(
-        `${import.meta.env.VITE_REACT_APP_API_URL}projects`,
+        `http://18.209.91.97:3333/api/projects`,
         {
           method: "GET",
           params: {
@@ -100,7 +100,7 @@ function Projects() {
     try {
       setDisabled(true);
       const result = await axios.post(
-        `${import.meta.env.VITE_REACT_APP_API_URL}projects`,
+        `http://18.209.91.97:3333/api/projects`,
         {
           projectName: projectData.projectName,
           startDate: projectData.startDate,
@@ -171,7 +171,7 @@ function Projects() {
     try {
       setDisabled(true);
       const result = await axios.put(
-        `${import.meta.env.VITE_REACT_APP_API_URL}projects/${projectData.id}`,
+        `http://18.209.91.97:3333/api/projects/${projectData.id}`,
         {
           projectName: projectData.projectName,
           startDate: projectData.startDate,
@@ -224,7 +224,7 @@ function Projects() {
       if (result.isConfirmed) {
         try {
           const response = await axios.delete(
-            `${import.meta.env.VITE_REACT_APP_API_URL}projects/${projectId}`,
+            `http://18.209.91.97:3333/api/projects/${projectId}`,
             {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("authToken")}`,

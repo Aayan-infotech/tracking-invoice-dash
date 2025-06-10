@@ -31,7 +31,7 @@ function Pages() {
     try {
       setLoading(true);
       const response = await fetchWithAuth(
-        `${import.meta.env.VITE_REACT_APP_API_URL}pages`,
+        `http://18.209.91.97:3333/api/pages`,
         {
           method: "GET",
         }
@@ -98,7 +98,7 @@ function Pages() {
 
       if (result.isConfirmed) {
         const response = await axios.delete(
-          `${import.meta.env.VITE_REACT_APP_API_URL}pages/${documentId}`,
+          `http://18.209.91.97:3333/api/pages/${documentId}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("authToken")}`,
@@ -177,7 +177,7 @@ function Pages() {
     
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_REACT_APP_API_URL}pages`,
+        `http://18.209.91.97:3333/api/pages`,
         data,
         {
           headers: {
@@ -214,7 +214,7 @@ function Pages() {
 
     try {
       const response = await axios.put(
-        `${import.meta.env.VITE_REACT_APP_API_URL}pages/${formData._id}`,
+        `http://18.209.91.97:3333/api/pages/${formData._id}`,
         data,
         {
           headers: {

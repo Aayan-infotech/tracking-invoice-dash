@@ -24,7 +24,7 @@ const LoginPage = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_REACT_APP_API_URL}auth/login`,
+        `http://18.209.91.97:3333/api/auth/login`,
         {
           method: "POST",
           headers: {
