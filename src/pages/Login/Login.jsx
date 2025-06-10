@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "./Login.css";
+import axios from "axios";
 
 const LoginPage = () => {
   const [form, setForm] = useState({ username: "", password: "" });
@@ -23,20 +24,19 @@ const LoginPage = () => {
     }
 
     try {
-      const response = await fetch(
+      const response = await axios.post(
         `http://18.209.91.97:3333/api/auth/login`,
+        form,
         {
-          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(form),
         }
       );
 
-      const result = await response.json();
+      const result = await response.data;
 
-      if (response.ok && result.statusCode === 200) {
+      if (response.status === 200) {
         // Save user data to localStorage
         const { user, accessToken, refreshToken } = result.data;
 
