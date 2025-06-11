@@ -171,7 +171,7 @@ function Projects() {
     try {
       setDisabled(true);
       const result = await axios.put(
-        `http://18.209.91.97:3333/api/projects/${projectData.id}`,
+        `http://18.209.91.97:3333/api/projects/update/${projectData.id}`,
         {
           projectName: projectData.projectName,
           startDate: projectData.startDate,
@@ -224,7 +224,7 @@ function Projects() {
       if (result.isConfirmed) {
         try {
           const response = await axios.delete(
-            `http://18.209.91.97:3333/api/projects/${projectId}`,
+            `http://18.209.91.97:3333/api/projects/delete/${projectId}`,
             {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("authToken")}`,
