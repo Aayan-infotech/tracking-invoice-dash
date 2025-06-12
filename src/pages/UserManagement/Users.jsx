@@ -110,9 +110,7 @@ const Users = () => {
       const userId = users[selectedUserIndex].userId;
       await axios
         .put(
-          `${
-            import.meta.env.VITE_REACT_APP_API_URL
-          }users/update-user-detail/${userId}`,
+          `http://18.209.91.97:3333/api/users/update-user-detail/${userId}`,
           formData,
           {
             headers: {
@@ -485,8 +483,6 @@ const Users = () => {
               </div>
             </div>
           )}
-
-          
         </div>
       </div>
     </div>
