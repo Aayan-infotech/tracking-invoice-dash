@@ -18,6 +18,7 @@ const Users = () => {
     mobile: "",
     address: "",
     username: "",
+    password: "",
     profile_image: "",
   });
   const [pagination, setPagination] = useState({
@@ -35,7 +36,7 @@ const Users = () => {
     try {
       setLoading(true);
       const response = await fetchWithAuth(
-        `http://18.209.91.97:3333/api/users/get-all-users`,
+        `http://localhost:3030/api/users/get-all-users`,
         {
           method: "GET",
           params: {
@@ -68,6 +69,7 @@ const Users = () => {
       mobile: users[index].mobile,
       address: users[index].address,
       username: users[index].username,
+      password: "",
       profile_image: users[index].profile_image || "./placeholder/person.png",
     });
     setModalType("view");
@@ -81,6 +83,7 @@ const Users = () => {
       mobile: users[index].mobile,
       address: users[index].address,
       username: users[index].username,
+      password: "", 
       profile_image: users[index].profile_image || "./placeholder/person.png",
     });
     setModalType("edit");
@@ -95,6 +98,7 @@ const Users = () => {
       mobile: "",
       address: "",
       username: "",
+      password: "",
       profile_image: "",
     });
   };
@@ -110,7 +114,7 @@ const Users = () => {
       const userId = users[selectedUserIndex].userId;
       await axios
         .put(
-          `http://18.209.91.97:3333/api/users/update-user-detail/${userId}`,
+          `http://localhost:3030/api/users/update-user-detail/${userId}`,
           formData,
           {
             headers: {
