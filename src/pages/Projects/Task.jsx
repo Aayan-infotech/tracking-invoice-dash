@@ -25,6 +25,7 @@ function Task() {
     projectId: "",
     taskName: "",
     taskAmount: "",
+    taskQuantity: "",
     description: "",
   });
   const [disabled, setDisabled] = useState(false);
@@ -104,6 +105,7 @@ function Task() {
       projectId: "",
       taskName: "",
       taskAmount: "",
+      taskQuantity: "",
       description: "",
     });
   };
@@ -125,6 +127,7 @@ function Task() {
           taskName: taskData.taskName,
           projectId: taskData.projectId,
           amount: taskData.taskAmount,
+          taskQuantity: taskData.taskQuantity,
           description: taskData.description,
         },
         {
@@ -139,6 +142,7 @@ function Task() {
         projectId: "",
         taskName: "",
         taskAmount: "",
+        taskQuantity: "",
         description: "",
       });
       setDisabled(false);
@@ -161,6 +165,7 @@ function Task() {
       projectName: task.projectDetails.projectName,
       taskName: task.taskName,
       taskAmount: task.amount ? task.amount : "N/A",
+      taskQuantity: task.taskQuantity || "N/A",
       description: task.description || "N/A",
       status: task.status || "N/A",
       taskUpdateDescription: task.taskUpdateDescription || "--",
@@ -177,6 +182,7 @@ function Task() {
       description: task.description || "",
       taskName: task.taskName || "",
       taskAmount: task.amount || "",
+      taskQuantity: task.taskQuantity || "",
     });
     setModalType("edit");
   };
@@ -192,6 +198,7 @@ function Task() {
           projectId: taskData.projectId,
           taskName: taskData.taskName,
           amount: taskData.taskAmount,
+          taskQuantity: taskData.taskQuantity,
           description: taskData.description,
         },
         {
@@ -206,6 +213,7 @@ function Task() {
         taskName: "",
         projectId: "",
         taskAmount: "",
+        taskQuantity: "",
         description: "",
       });
       setDisabled(false);
@@ -304,6 +312,7 @@ function Task() {
                   <th>Project Name</th>
                   <th>Task Name</th>
                   <th>Amount</th>
+                  <th>Task Quantity</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
@@ -323,6 +332,7 @@ function Task() {
                           <span className="text-muted">N/A</span>
                         )}
                       </td>
+                      <td>{task.taskQuantity}</td>
                       <td>
                         {task.status === "completed" ? (
                           <span className="badge bg-success">Completed</span>
@@ -499,6 +509,18 @@ function Task() {
                           </div>
                           <div className="mb-3">
                             <label className="form-label">
+                              Task Quantity
+                            </label>
+                            <input
+                              type="number"
+                              name="taskQuantity"
+                              className="form-control"
+                              onChange={handleChange}
+                              placeholder="Enter task quantity"
+                            />
+                          </div>
+                          <div className="mb-3">
+                            <label className="form-label">
                               Task Description
                             </label>
                             <textarea
@@ -534,6 +556,14 @@ function Task() {
                               {taskData?.taskAmount
                                 ? taskData.taskAmount.toFixed(2)
                                 : "N/A"}
+                            </div>
+                          </div>
+                          <div className="mb-3 d-flex">
+                            <div className="fw-semibold w-25">
+                              📦 Task Quantity:
+                            </div>
+                            <div className="text-muted">
+                              {taskData?.taskQuantity || "N/A"}
                             </div>
                           </div>
                           <div className="mb-3 d-flex">
@@ -618,6 +648,18 @@ function Task() {
                                 name="taskAmount"
                                 className="form-control"
                                 value={taskData.taskAmount}
+                                onChange={handleChange}
+                              />
+                            </div>
+                            <div className="mb-3">
+                              <label className="form-label">
+                                Task Quantity
+                              </label>
+                              <input
+                                type="number"
+                                name="taskQuantity"
+                                className="form-control"
+                                value={taskData.taskQuantity}
                                 onChange={handleChange}
                               />
                             </div>
