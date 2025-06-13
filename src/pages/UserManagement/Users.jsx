@@ -36,7 +36,7 @@ const Users = () => {
     try {
       setLoading(true);
       const response = await fetchWithAuth(
-        `http://localhost:3030/api/users/get-all-users`,
+        `http://18.209.91.97:3333/api/users/get-all-users`,
         {
           method: "GET",
           params: {
