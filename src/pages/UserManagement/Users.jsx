@@ -114,7 +114,7 @@ const Users = () => {
       const userId = users[selectedUserIndex].userId;
       await axios
         .put(
-          `http://localhost:3030/api/users/update-user-detail/${userId}`,
+          `http://18.209.91.97:3333/api/users/update-user-detail/${userId}`,
           formData,
           {
             headers: {

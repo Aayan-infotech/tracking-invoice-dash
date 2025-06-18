@@ -27,7 +27,8 @@ function QualityAssurance() {
   const [formData, setFormData] = useState({
     projectId: "",
     documentName: "",
-    documentDescription: "",
+    // documentDescription: "",
+    documentFile: null,
   });
 
   const fetchProjects = async () => {
@@ -88,7 +89,7 @@ function QualityAssurance() {
       projectId: selectedDoc.projectId || "",
       projectName: selectedDoc.projectName || "",
       documentName: selectedDoc.documentName || "",
-      documentDescription: selectedDoc.documentDescription || "",
+      documentFile: selectedDoc.documentFile || null,
       status: selectedDoc.status || false,
       _id: selectedDoc._id || "",
     });
@@ -102,7 +103,7 @@ function QualityAssurance() {
       projectId: selectedDoc.projectId || "",
       projectName: selectedDoc.projectName || "",
       documentName: selectedDoc.documentName || "",
-      documentDescription: selectedDoc.documentHtml || "",
+      documentFile: null,
       status: selectedDoc.status || false,
       _id: selectedDoc._id || "",
     });
@@ -133,7 +134,7 @@ function QualityAssurance() {
 
         if (response.status === 200) {
           toast.success("Document deleted successfully");
-          fetchDocument(); // Refresh the list
+          fetchDocument();
           Swal.fire("Deleted!", "Your document has been deleted.", "success");
         }
       }
@@ -167,6 +168,16 @@ function QualityAssurance() {
     }));
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        documentFile: file,
+      }));
+    }
+  };
+
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= pagination.total_page) {
       setPagination((prev) => ({ ...prev, current_page: newPage }));
@@ -186,15 +197,21 @@ function QualityAssurance() {
     const data = {
       projectId: formData.projectId,
       documentName: formData.documentName,
-      documentDescription: formData.documentDescription,
+      documentFile: formData.documentFile,
     };
     try {
+      const formData = new FormData();
+      formData.append("projectId", data.projectId);
+      formData.append("documentName", data.documentName);
+      formData.append("documentFile", data.documentFile);
+
       const response = await axios.post(
         `http://18.209.91.97:3333/api/projects/quality-assurance`,
-        data,
+        formData,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            "Content-Type": "multipart/form-data",
           },
         }
       );
@@ -223,16 +240,24 @@ function QualityAssurance() {
     const data = {
       projectId: formData.projectId,
       documentName: formData.documentName,
-      documentDescription: formData.documentDescription,
+      documentFile: formData.documentFile,
     };
+
+    const updatedFormData = new FormData();
+    updatedFormData.append("projectId", data.projectId);
+    updatedFormData.append("documentName", data.documentName);
+    if (data.documentFile) {
+      updatedFormData.append("documentFile", data.documentFile);
+    }
 
     try {
       const response = await axios.put(
         `http://18.209.91.97:3333/api/projects/quality-assurance/${formData._id}`,
-        data,
+        updatedFormData,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            "Content-Type": "multipart/form-data",
           },
         }
       );
@@ -297,18 +322,32 @@ function QualityAssurance() {
                 <tr>
                   <th>Project Name</th>
                   <th>Document Name</th>
+                  <th>Document File</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {document.length > 0 ? (
-                  document.map((task, idx) => (
-                    <tr key={task._id}>
-                      <td>{task.projectName || "N/A"}</td>
-                      <td>{task.documentName || "N/A"}</td>
+                  document.map((doc, idx) => (
+                    <tr key={doc._id}>
+                      <td>{doc.projectName || "N/A"}</td>
+                      <td>{doc.documentName || "N/A"}</td>
                       <td>
-                        {task.status ? (
+                        {doc.documentFile ? (
+                          <a
+                            href={`${doc.documentFile}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            View Document
+                          </a>
+                        ) : (
+                          "No Document"
+                        )}
+                      </td>
+                      <td>
+                        {doc.status ? (
                           <span className="badge bg-success">Active</span>
                         ) : (
                           <span className="badge bg-warning">Pending</span>
@@ -330,7 +369,7 @@ function QualityAssurance() {
                         <i
                           className="bi bi-trash text-danger fs-5 ms-3"
                           style={{ cursor: "pointer" }}
-                          onClick={() => handleDelete(task._id)}
+                          onClick={() => handleDelete(doc._id)}
                           title="Delete Document"
                         ></i>
                       </td>
@@ -478,7 +517,7 @@ function QualityAssurance() {
                             />
                           </div>
 
-                          <div className="mb-3">
+                          {/* <div className="mb-3">
                             <label
                               htmlFor="documentDescription"
                               className="form-label"
@@ -493,6 +532,19 @@ function QualityAssurance() {
                                 placeholder="Enter document description..."
                               />
                             </div>
+                          </div> */}
+                          <div className="mb-3">
+                            <label htmlFor="formFile" className="form-label">
+                              Upload Document *
+                            </label>
+                            <input
+                              className="form-control"
+                              type="file"
+                              accept="application/pdf"
+                              id="formFile"
+                              name="documentFile"
+                              onChange={handleFileChange}
+                            />
                           </div>
                         </div>
                       </div>
@@ -521,21 +573,43 @@ function QualityAssurance() {
                               {formData?.status ? (
                                 <span className="badge bg-success">Active</span>
                               ) : (
-                                <span className="badge bg-warning">Pending</span>
+                                <span className="badge bg-warning">
+                                  Pending
+                                </span>
                               )}
                             </div>
                           </div>
-                          <div className="mb-3">
+                          {/* <div className="mb-3">
                             <div className="fw-semibold mb-2">
                               📄 Description:
                             </div>
-                            <div 
+                            <div
                               className="border p-3 rounded bg-light"
-                              style={{ minHeight: '100px' }}
+                              style={{ minHeight: "100px" }}
                               dangerouslySetInnerHTML={{
-                                __html: formData?.documentDescription || "No description available"
+                                __html:
+                                  formData?.documentDescription ||
+                                  "No description available",
                               }}
                             />
+                          </div> */}
+                          <div className="mb-3 d-flex">
+                            <div className="fw-semibold w-25">
+                              📂 Document File:
+                            </div>
+                            <div className="text-muted">
+                              {formData?.documentFile ? (
+                                <a
+                                  href={`${formData.documentFile}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  View Document
+                                </a>
+                              ) : (
+                                "No Document"
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -586,7 +660,7 @@ function QualityAssurance() {
                             />
                           </div>
 
-                          <div className="mb-3">
+                          {/* <div className="mb-3">
                             <label
                               htmlFor="documentDescription"
                               className="form-label"
@@ -601,6 +675,19 @@ function QualityAssurance() {
                                 placeholder="Enter document description..."
                               />
                             </div>
+                          </div> */}
+                          <div className="mb-3">
+                            <label htmlFor="formFile" className="form-label">
+                              Upload Document *
+                            </label>
+                            <input
+                              className="form-control"
+                              type="file"
+                              accept="application/pdf"
+                              id="formFile"
+                              name="documentFile"
+                              onChange={handleFileChange}
+                            />
                           </div>
                         </div>
                       </div>

@@ -9,6 +9,7 @@ import AssignTasks from "../pages/Projects/AssignTasks";
 import QualityAssurance from "../pages/Projects/QuanlityAssuarnce";
 import TermsOfService from "../pages/TermsOfService/TermsOfService";
 import Pages from "../pages/Pages";
+import ProjectInvoices from "../pages/Projects/ProjectInvoices";
 
 export default function AppRoutes() {
   return (
@@ -48,6 +49,15 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute>
             <Task />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/invoices"
+        element={
+          <ProtectedRoute>
+            <ProjectInvoices />
           </ProtectedRoute>
         }
       />

@@ -18,7 +18,8 @@ export default function Sidebar() {
       pathname.startsWith("/projects") ||
       pathname.startsWith("/tasks") ||
       pathname.startsWith("/assign-tasks") ||
-      pathname.startsWith("/quality-assurance")
+      pathname.startsWith("/quality-assurance") ||
+      pathname.startsWith("/invoices")
     ) {
       setOpenProjects(true);
     }
@@ -129,6 +130,16 @@ export default function Sidebar() {
                   }`}
                 >
                   Quality Assurance
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/invoices"
+                  className={`sidebar-sublink ${
+                    pathname === "/invoices" ? "active" : ""
+                  }`}
+                >
+                  Project Invoices
                 </Link>
               </li>
             </ul>

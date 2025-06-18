@@ -159,16 +159,21 @@ function Task() {
     }
   };
 
-  const handleView = (idx) => {
+  const handleView = async (idx) => {
     const task = tasks[idx];
+    console.log("Selected task:", task);
+
+    const taskDetails = await fetchWithAuth(
+      `http://18.209.91.97:3333/api/projects/task-details/${task._id}`
+    );
+    const taskData = taskDetails?.data?.data || {};
     setTaskData({
       projectName: task.projectDetails.projectName,
       taskName: task.taskName,
       taskAmount: task.amount ? task.amount : "N/A",
       taskQuantity: task.taskQuantity || "N/A",
       description: task.description || "N/A",
-      status: task.status || "N/A",
-      taskUpdateDescription: task.taskUpdateDescription || "--",
+      taskUpdateHistory: taskData.taskUpdateHistory || [],
     });
     setModalType("view");
   };
@@ -191,9 +196,7 @@ function Task() {
     try {
       setDisabled(true);
       const result = await axios.put(
-        `http://18.209.91.97:3333/api/projects/tasks/${
-          taskData.id
-        }`,
+        `http://18.209.91.97:3333/api/projects/tasks/${taskData.id}`,
         {
           projectId: taskData.projectId,
           taskName: taskData.taskName,
@@ -508,9 +511,7 @@ function Task() {
                             />
                           </div>
                           <div className="mb-3">
-                            <label className="form-label">
-                              Task Quantity
-                            </label>
+                            <label className="form-label">Task Quantity</label>
                             <input
                               type="number"
                               name="taskQuantity"
@@ -574,32 +575,70 @@ function Task() {
                               {taskData?.description || "N/A"}
                             </div>
                           </div>
-
-                          <div className="mb-3 d-flex">
-                            <div className="fw-semibold w-25">📅 Status:</div>
-                            <div className="text-muted">
-                              {taskData.status === "completed" ? (
-                                <span className="badge bg-success">
-                                  Completed
-                                </span>
-                              ) : taskData.status === "in progress" ? (
-                                <span className="badge bg-primary">
-                                  In Progress
-                                </span>
-                              ) : (
-                                <span className="badge bg-warning">
-                                  Pending
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                          <div className="mb-3 d-flex">
-                            <div className="fw-semibold w-25">
-                              📝 Task Update:
-                            </div>
-                            <div className="text-muted">
-                              {taskData?.taskUpdateDescription || "N/A"}
-                            </div>
+                          <h5>Task Update History</h5>
+                          <div className="table-responsive">
+                            <table className="table table-bordered align-middle text-center table-striped">
+                              <thead className="table-dark">
+                                <tr>
+                                  <th>S.No</th>
+                                  <th>Update Description</th>
+                                  <th>Update Video/Images</th>
+                                  <th>Update Status</th>
+                                  <th>Updated At</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {taskData?.taskUpdateHistory &&
+                                taskData.taskUpdateHistory.length > 0 ? (
+                                  taskData.taskUpdateHistory.map(
+                                    (update, index) => (
+                                      <tr key={index}>
+                                        <td>{index + 1}</td>
+                                        <td>{update.updateDescription}</td>
+                                        <td>
+                                          {update.updatePhotos.map(
+                                            (photo, imgIndex) => (
+                                              <a
+                                                key={imgIndex}
+                                                href={photo}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-primary d-block"
+                                              >
+                                                View {imgIndex + 1}
+                                              </a>
+                                            )
+                                          )}
+                                        </td>
+                                        <td>
+                                          {update.status === "completed" ? (
+                                            <span className="badge bg-success">
+                                              Completed
+                                            </span>
+                                          ) : update.status ===
+                                            "in progress" ? (
+                                            <span className="badge bg-primary">
+                                              In Progress
+                                            </span>
+                                          ) : (
+                                            <span className="badge bg-warning">
+                                              Pending
+                                            </span>
+                                          )}
+                                        </td>
+                                        <td>{new Date(update.updatedAt).toLocaleString('en-US')}</td>
+                                      </tr>
+                                    )
+                                  )
+                                ) : (
+                                  <tr>
+                                    <td colSpan="5" className="text-center">
+                                      No updates available
+                                    </td>
+                                  </tr>
+                                )}
+                              </tbody>
+                            </table>
                           </div>
                         </div>
                       </div>
