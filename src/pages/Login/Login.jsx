@@ -45,8 +45,10 @@ const LoginPage = () => {
         localStorage.setItem("userId", user.userId);
         localStorage.setItem("username", user.username);
         localStorage.setItem("name", user.name);
-        localStorage.setItem("userRole", user.role || "user"); // Default to 'user' if role is undefined
+        localStorage.setItem("userRole", user.role || "user"); 
         localStorage.setItem("profileImage", user.profile_image || "");
+        localStorage.setItem("email", user.email || "");
+        localStorage.setItem("mobile", user.mobile || "");
 
         // Check user role and redirect accordingly
         if (user.role === "admin") {
