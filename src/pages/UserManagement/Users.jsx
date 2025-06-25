@@ -5,6 +5,7 @@ import "./Users.css";
 import axios from "axios";
 import { fetchWithAuth } from "../../api/authFetch";
 import { toast } from "react-toastify";
+import { links } from "../../contstants";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -36,7 +37,7 @@ const Users = () => {
     try {
       setLoading(true);
       const response = await fetchWithAuth(
-        `http://18.209.91.97:3333/api/users/get-all-users`,
+        `${links.BASE_URL}users/get-all-users`,
         {
           method: "GET",
           params: {
@@ -114,7 +115,7 @@ const Users = () => {
       const userId = users[selectedUserIndex].userId;
       await axios
         .put(
-          `http://18.209.91.97:3333/api/users/update-user-detail/${userId}`,
+          `${links.BASE_URL}users/update-user-detail/${userId}`,
           formData,
           {
             headers: {

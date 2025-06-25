@@ -8,6 +8,7 @@ import Button from "react-bootstrap/Button";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import Editor from "../../components/TextEditor/TextEditor";
+import {links} from "../../contstants";
 
 function QualityAssurance() {
   const [loading, setLoading] = useState(true);
@@ -35,7 +36,7 @@ function QualityAssurance() {
     try {
       setLoading(true);
       const response = await fetchWithAuth(
-        `http://18.209.91.97:3333/api/projects/project-dropdown`,
+        `${links.BASE_URL}projects/project-dropdown`,
         {
           method: "GET",
         }
@@ -49,7 +50,7 @@ function QualityAssurance() {
   const fetchDocument = async () => {
     try {
       const response = await fetchWithAuth(
-        `http://18.209.91.97:3333/api/projects/quality-assurance`,
+        `${links.BASE_URL}projects/quality-assurance`,
         {
           method: "GET",
         }
@@ -124,7 +125,7 @@ function QualityAssurance() {
 
       if (result.isConfirmed) {
         const response = await axios.delete(
-          `http://18.209.91.97:3333/api/projects/quality-assurance/${documentId}`,
+          `${links.BASE_URL}projects/quality-assurance/${documentId}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("authToken")}`,
@@ -206,7 +207,7 @@ function QualityAssurance() {
       formData.append("documentFile", data.documentFile);
 
       const response = await axios.post(
-        `http://18.209.91.97:3333/api/projects/quality-assurance`,
+        `${links.BASE_URL}projects/quality-assurance`,
         formData,
         {
           headers: {
@@ -252,7 +253,7 @@ function QualityAssurance() {
 
     try {
       const response = await axios.put(
-        `http://18.209.91.97:3333/api/projects/quality-assurance/${formData._id}`,
+        `${links.BASE_URL}projects/quality-assurance/${formData._id}`,
         updatedFormData,
         {
           headers: {

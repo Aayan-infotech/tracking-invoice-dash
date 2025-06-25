@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "./Login.css";
 import axios from "axios";
+import { links } from "../../contstants";
 
 const LoginPage = () => {
   const [form, setForm] = useState({ username: "", password: "" });
@@ -25,7 +26,7 @@ const LoginPage = () => {
 
     try {
       const response = await axios.post(
-        `http://18.209.91.97:3333/api/auth/login`,
+        `${links.BASE_URL}auth/login`,
         form,
         {
           headers: {

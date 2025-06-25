@@ -7,6 +7,7 @@ import { fetchWithAuth } from "../../api/authFetch";
 import Button from "react-bootstrap/Button";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import { links } from "../../contstants";
 
 function AssignTasks() {
   const [loading, setLoading] = useState(true);
@@ -34,7 +35,7 @@ function AssignTasks() {
     try {
       setLoading(true);
       const response = await fetchWithAuth(
-        `http://18.209.91.97:3333/api/projects/project-dropdown`,
+        `${links.BASE_URL}projects/project-dropdown`,
         {
           method: "GET",
         }
@@ -49,7 +50,7 @@ function AssignTasks() {
     try {
       setLoading(true);
       const response = await fetchWithAuth(
-        `http://18.209.91.97:3333/api/users/all-verified-users`,
+        `${links.BASE_URL}users/all-verified-users`,
         {
           method: "GET",
         }
@@ -64,7 +65,7 @@ function AssignTasks() {
   const fetchTasks = async (projectId) => {
     try {
       const response = await fetchWithAuth(
-        `http://18.209.91.97:3333/api/projects/tasks/${projectId}`,
+        `${links.BASE_URL}projects/tasks/${projectId}`,
         {
           method: "GET",
         }
@@ -80,7 +81,7 @@ function AssignTasks() {
     try {
       setLoading(true);
       const response = await fetchWithAuth(
-        `http://18.209.91.97:3333/api/projects/assign-tasks`,
+        `${links.BASE_URL}projects/assign-tasks`,
         {
           method: "GET",
           params: {
@@ -89,6 +90,7 @@ function AssignTasks() {
           },
         }
       );
+      console.log("Assigned Tasks Response:", response.data);
       if (response.data.success) {
         setAssignedTasks(response?.data?.data?.tasks || []);
         setPagination({
@@ -169,7 +171,7 @@ function AssignTasks() {
     try {
       setDisabled(true);
       const result = await axios.post(
-        `http://18.209.91.97:3333/api/projects/assign-tasks`,
+        `${links.BASE_URL}projects/assign-tasks`,
         {
           projectId: formData.projectId,
           userId: formData.userId,
@@ -215,6 +217,7 @@ function AssignTasks() {
 
   const handleEdit = (idx) => {
     const assignedTask = assignedTasks[idx];
+    console.log("Editing Assigned Task:", assignedTask);
     setFormData({
       id: assignedTask._id,
       projectId: assignedTask.projectId || "",
@@ -229,7 +232,7 @@ function AssignTasks() {
     try {
       setDisabled(true);
       const result = await axios.put(
-        `http://18.209.91.97:3333/api/projects/assign-tasks/${
+        `${links.BASE_URL}projects/assign-tasks/${
           formData.id
         }`,
         {
@@ -273,7 +276,7 @@ function AssignTasks() {
       if (result.isConfirmed) {
         try {
           const response = await axios.delete(
-            `http://18.209.91.97:3333/api/projects/assign-tasks/${assignedTaskId}`,
+            `${links.BASE_URL}projects/assign-tasks/${assignedTaskId}`,
             {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("authToken")}`,
@@ -365,12 +368,12 @@ function AssignTasks() {
                           onClick={() => handleEdit(idx)}
                           title="Edit Task"
                         ></i>
-                        <i
+                        {/* <i
                           className="bi bi-trash text-danger fs-5 ms-3"
                           style={{ cursor: "pointer" }}
                           onClick={() => handleDelete(task._id)}
                           title="Delete Task"
-                        ></i>
+                        ></i> */}
                       </td>
                     </tr>
                   ))
@@ -604,7 +607,7 @@ function AssignTasks() {
                                   ))}
                               </select>
                             </div>
-
+                            {console.log(tasks)}
                             <div className="mb-3">
                               <label htmlFor="Task" className="form-label">
                                 Select Task

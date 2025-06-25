@@ -5,6 +5,7 @@ import { fetchWithAuth } from "../../api/authFetch";
 import { toast } from "react-toastify";
 import Button from "react-bootstrap/Button";
 import axios from "axios";
+import { links } from "../../contstants";
 
 function ProjectInvoices() {
   const [loading, setLoading] = useState(true);
@@ -27,7 +28,7 @@ function ProjectInvoices() {
     try {
       setLoading(true);
       const response = await fetchWithAuth(
-        `http://18.209.91.97:3333/api/projects/invoice`,
+        `${links.BASE_URL}projects/invoice`,
         {
           method: "GET",
           params: {
@@ -98,7 +99,7 @@ function ProjectInvoices() {
     try {
       setDisabled(true);
       const result = await axios.put(
-        `http://18.209.91.97:3333/api/projects/update-invoice`,
+        `${links.BASE_URL}projects/update-invoice`,
         {
           invoiceId: formData.invoiceId,
           status: formData.status,

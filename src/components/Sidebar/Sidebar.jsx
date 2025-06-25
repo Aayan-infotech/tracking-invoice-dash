@@ -7,6 +7,7 @@ export default function Sidebar() {
   const location = useLocation();
   const { pathname } = location;
   const [openUsers, setOpenUsers] = useState(false);
+  const [openTasks, setOpenTasks] = useState(false);
   const [openProjects, setOpenProjects] = useState(false);
   const [openPages, setOpenPages] = useState(false);
 
@@ -14,9 +15,12 @@ export default function Sidebar() {
     if (pathname.startsWith("/users")) {
       setOpenUsers(true);
     }
+    if (pathname.startsWith("/tasks")) {
+      setOpenTasks(true);
+    }
     if (
       pathname.startsWith("/projects") ||
-      pathname.startsWith("/tasks") ||
+      pathname.startsWith("/projectTasks") ||
       pathname.startsWith("/assign-tasks") ||
       pathname.startsWith("/quality-assurance") ||
       pathname.startsWith("/invoices")
@@ -75,6 +79,37 @@ export default function Sidebar() {
           )}
         </li>
 
+        {/* Users Dropdown */}
+        <li className="sidebar-item">
+          <div
+            className="sidebar-link"
+            onClick={() => setOpenTasks(!openTasks)}
+          >
+            <span>
+              <i className="bi bi-list-task me-2"></i>Task Management
+            </span>
+            <i
+              className={`bi ${
+                openTasks ? "bi-chevron-up" : "bi-chevron-down"
+              }`}
+            ></i>
+          </div>
+          {openTasks && (
+            <ul className="sidebar-submenu">
+              <li>
+                <Link
+                  to="/tasks"
+                  className={`sidebar-sublink ${
+                    pathname === "/tasks" ? "active" : ""
+                  }`}
+                >
+                  All Tasks
+                </Link>
+              </li>
+            </ul>
+          )}
+        </li>
+
         {/* Project Management */}
         <li className="sidebar-item">
           <div
@@ -104,12 +139,12 @@ export default function Sidebar() {
               </li>
               <li>
                 <Link
-                  to="/tasks"
+                  to="/projectTasks"
                   className={`sidebar-sublink ${
-                    pathname === "/tasks" ? "active" : ""
+                    pathname === "/projectTasks" ? "active" : ""
                   }`}
                 >
-                  All Tasks
+                  Project Tasks
                 </Link>
               </li>
               <li>

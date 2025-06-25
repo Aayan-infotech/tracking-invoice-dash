@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Topbar from "../../components/Topbar/Topbar";
-import "./Projects.css";
+import "./Task.css";
 import axios from "axios";
 import { fetchWithAuth } from "../../api/authFetch";
 import Button from "react-bootstrap/Button";
@@ -9,10 +9,11 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { links } from "../../contstants";
 
-function Projects() {
+function Task() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [projects, setProjects] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  const [refreshTable, setRefreshTable] = useState(false);
   const [pagination, setPagination] = useState({
     current_page: 1,
     total_page: 1,
@@ -20,19 +21,19 @@ function Projects() {
     total_records: 0,
   });
   const [modalType, setModalType] = useState(null);
-  const [projectData, setProjectData] = useState({
-    projectName: "",
-    startDate: "",
-    endDate: "",
+  const [taskData, setTaskData] = useState({
+    taskName: "",
+    amount: "",
+    status: "",
     description: "",
   });
   const [disabled, setDisabled] = useState(false);
 
-  const fetchProjects = async () => {
+  const fetchTasks = async () => {
     try {
       setLoading(true);
       const response = await fetchWithAuth(
-        `${links.BASE_URL}projects`,
+        `${links.BASE_URL}projects/tasks`,
         {
           method: "GET",
           params: {
@@ -42,9 +43,7 @@ function Projects() {
         }
       );
 
-      setProjects(
-        response?.data?.data?.projects ? response.data.data.projects : []
-      );
+      setTasks(response?.data?.data?.tasks ? response.data.data.tasks : []);
       setPagination({
         current_page: response?.data?.data?.current_page || 1,
         total_page: response?.data?.data?.total_page || 1,
@@ -55,13 +54,13 @@ function Projects() {
     } catch (err) {
       setError(err.message);
       setLoading(false);
-      toast.error("Failed to fetch projects");
+      toast.error("Failed to fetch tasks");
     }
   };
 
   useEffect(() => {
-    fetchProjects();
-  }, [pagination.current_page]);
+    fetchTasks();
+  }, [pagination.current_page, refreshTable]);
 
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= pagination.total_page) {
@@ -71,42 +70,40 @@ function Projects() {
 
   const handleCloseModal = () => {
     setModalType(null);
-    setProjectData({
-      projectName: "",
-      startDate: "",
-      endDate: "",
+    setTaskData({
+      projectId: "",
+      taskName: "",
+      taskAmount: "",
       description: "",
     });
   };
 
-  const handleAddProject = () => {
+  const handleAddTask = () => {
     setModalType("add");
-    setProjectData({
-      projectName: "",
-      startDate: "",
-      endDate: "",
+    setTaskData({
+      taskName: "",
       description: "",
     });
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProjectData((prev) => ({
+    setTaskData((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
-  const saveProjectDetails = async () => {
+  const saveTaskDetails = async () => {
     try {
       setDisabled(true);
       const result = await axios.post(
-        `${links.BASE_URL}projects`,
+        `${links.BASE_URL}projects/tasks`,
         {
-          projectName: projectData.projectName,
-          startDate: projectData.startDate,
-          endDate: projectData.endDate,
-          description: projectData.description,
+          taskName: taskData.taskName,
+          amount: taskData.amount,
+          status: taskData.status,
+          description: taskData.description,
         },
         {
           headers: {
@@ -114,16 +111,16 @@ function Projects() {
           },
         }
       );
-      toast.success("Project saved successfully");
+      toast.success("Task saved successfully");
       setModalType(null);
-      setProjectData({
-        projectName: "",
-        startDate: "",
-        endDate: "",
+      setTaskData({
+        taskName: "",
+        amount: "",
+        status: "",
         description: "",
       });
       setDisabled(false);
-      setProjects((prev) => [...prev, result.data.data]);
+      setRefreshTable((prev) => !prev);
     } catch (err) {
       const response = err.response.data;
       setLoading(false);
@@ -131,54 +128,44 @@ function Projects() {
       if (response && response.message) {
         toast.error(response.message);
       } else {
-        toast.error("Failed to save project details");
+        toast.error("Failed to save task details");
       }
     }
   };
 
-  const handleView = (idx) => {
-    const project = projects[idx];
-    setProjectData({
-      projectName: project.projectName,
-      startDate: project.startDate
-        ? new Date(project.startDate).toISOString().split("T")[0]
-        : "",
-      endDate: project.endDate
-        ? new Date(project.endDate).toISOString().split("T")[0]
-        : "",
-      description: project.description || "",
+  const handleView = async (idx) => {
+    const task = tasks[idx];
+    setTaskData({
+      taskName: task.taskName,
+      description: task.description || "N/A",
+      amount: task.amount || "N/A",
+      status: task.status || "N/A",
     });
     setModalType("view");
   };
 
   const handleEdit = (idx) => {
-    const project = projects[idx];
-    setProjectData({
-      id: project._id,
-      projectName: project.projectName,
-      startDate: project.startDate
-        ? new Date(project.startDate).toISOString().split("T")[0]
-        : "",
-      endDate: project.endDate
-        ? new Date(project.endDate).toISOString().split("T")[0]
-        : "",
-      description: project.description || "",
-      status: project.status || "active",
+    const task = tasks[idx];
+    setTaskData({
+      description: task.description || "",
+      taskName: task.taskName || "",
+      amount: task.amount || "",
+      status: task.status || "",
+      id: task._id || "",
     });
     setModalType("edit");
   };
 
-  const updateProjectDetails = async () => {
+  const updateTaskDetails = async () => {
     try {
       setDisabled(true);
       const result = await axios.put(
-        `${links.BASE_URL}projects/update/${projectData.id}`,
+        `${links.BASE_URL}projects/tasks/${taskData.id}`,
         {
-          projectName: projectData.projectName,
-          startDate: projectData.startDate,
-          endDate: projectData.endDate,
-          description: projectData.description,
-          status: projectData.status,
+          taskName: taskData.taskName,
+          amount: taskData.amount,
+          status: taskData.status,
+          description: taskData.description,
         },
         {
           headers: {
@@ -186,20 +173,14 @@ function Projects() {
           },
         }
       );
-      toast.success("Project updated successfully");
+      toast.success("Task updated successfully");
       setModalType(null);
-      setProjectData({
-        projectName: "",
-        startDate: "",
-        endDate: "",
+      setTaskData({
+        taskName: "",
         description: "",
       });
       setDisabled(false);
-      setProjects((prev) =>
-        prev.map((project) =>
-          project._id === result.data.data._id ? result.data.data : project
-        )
-      );
+      setRefreshTable((prev) => !prev);
     } catch (err) {
       const response = err.response.data;
       setLoading(false);
@@ -207,12 +188,12 @@ function Projects() {
       if (response && response.message) {
         toast.error(response.message);
       } else {
-        toast.error("Failed to update project details");
+        toast.error("Failed to update task details");
       }
     }
   };
 
-  const handleDelete = async (projectId) => {
+  const handleDelete = async (taskId) => {
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -225,23 +206,21 @@ function Projects() {
       if (result.isConfirmed) {
         try {
           const response = await axios.delete(
-            `${links.BASE_URL}projects/delete/${projectId}`,
+            `${links.BASE_URL}projects/tasks/${taskId}`,
             {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("authToken")}`,
               },
             }
           );
-          toast.success("Project deleted successfully");
-          setProjects((prev) =>
-            prev.filter((project) => project._id !== projectId)
-          );
+          toast.success("Task deleted successfully");
+          setTasks((prev) => prev.filter((task) => task._id !== taskId));
         } catch (err) {
           const response = err.response.data;
           if (response && response.message) {
             toast.error(response.message);
           } else {
-            toast.error("Failed to delete project");
+            toast.error("Failed to delete task");
           }
         }
       }
@@ -283,13 +262,9 @@ function Projects() {
         <Topbar />
         <div className="p-4">
           <div className="d-flex justify-content-between align-items-center mb-4">
-            <h3 className="fw-bold text-dark">Project Management</h3>
-            <Button
-              title="Add Project"
-              onClick={handleAddProject}
-              variant="primary"
-            >
-              Add Project
+            <h3 className="fw-bold text-dark">Task Management</h3>
+            <Button title="Add Task" onClick={handleAddTask} variant="primary">
+              Add Task
             </Button>
           </div>
 
@@ -297,52 +272,31 @@ function Projects() {
             <table className="table table-bordered align-middle text-center table-striped">
               <thead className="table-dark">
                 <tr>
-                  <th>Project Name</th>
-                  <th>Start Date</th>
-                  <th>End Date</th>
+                  <th>Task Name</th>
+                  <th>Task Amount</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {projects.length > 0 ? (
-                  projects.map((project, idx) => (
-                    <tr key={project._id}>
-                      <td>{project.projectName}</td>
+                {tasks.length > 0 ? (
+                  tasks.map((task, idx) => (
+                    <tr key={task._id}>
+                      <td>{task.taskName}</td>
                       <td>
-                        {project.startDate
-                          ? new Date(project.startDate).toLocaleDateString(
-                              "en-US",
-                              {
-                                month: "2-digit",
-                                day: "2-digit",
-                                year: "numeric",
-                              }
-                            )
-                          : "N/A"}
-                      </td>
-                      <td>
-                        {project.endDate
-                          ? new Date(project.endDate).toLocaleDateString(
-                              "en-US",
-                              {
-                                month: "2-digit",
-                                day: "2-digit",
-                                year: "numeric",
-                              }
-                            )
-                          : "N/A"}
-                      </td>
-                      <td>
-                        {/* 'active', 'completed', 'on hold', 'cancelled */}
-                        {project.status === "active" ? (
-                          <span className="badge bg-success">Active</span>
-                        ) : project.status === "completed" ? (
-                          <span className="badge bg-primary">Completed</span>
-                        ) : project.status === "on hold" ? (
-                          <span className="badge bg-warning">On Hold</span>
+                        {task.amount ? (
+                          <span className="text-success fw-semibold">
+                            ${task.amount.toFixed(2)}
+                          </span>
                         ) : (
-                          <span className="badge bg-danger">Cancelled</span>
+                          <span className="text-muted">N/A</span>
+                        )}
+                      </td>
+                      <td>
+                        {task.status === "active" ? (
+                          <span className="badge bg-success">Active</span>
+                        ) : (
+                          <span className="badge bg-danger">Blocked</span>
                         )}
                       </td>
                       <td>
@@ -358,19 +312,19 @@ function Projects() {
                           onClick={() => handleEdit(idx)}
                           title="Edit Project"
                         ></i>
-                        {/* <i
+                        <i
                           className="bi bi-trash text-danger fs-5 ms-3"
                           style={{ cursor: "pointer" }}
-                          onClick={() => handleDelete(project._id)}
+                          onClick={() => handleDelete(task._id)}
                           title="Delete Project"
-                        ></i> */}
+                        ></i>
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
                     <td colSpan="5" className="text-center">
-                      No projects found
+                      No tasks found
                     </td>
                   </tr>
                 )}
@@ -452,10 +406,10 @@ function Projects() {
                   <div className="modal-header">
                     <h5 className="modal-title">
                       {modalType === "add"
-                        ? "Add Project"
+                        ? "Add Task"
                         : modalType === "view"
-                        ? "View Project"
-                        : "Edit Project"}
+                        ? "View Task"
+                        : "Edit Task"}
                     </h5>
                     <button
                       type="button"
@@ -468,35 +422,28 @@ function Projects() {
                       <div className="row">
                         <div className="col-md-12">
                           <div className="mb-3">
-                            <label className="form-label">Project Name</label>
+                            <label className="form-label">Task Name</label>
                             <input
                               type="text"
-                              name="projectName"
+                              name="taskName"
                               className="form-control"
                               onChange={handleChange}
+                              placeholder="Enter task name"
                             />
                           </div>
                           <div className="mb-3">
-                            <label className="form-label">Start Date</label>
+                            <label className="form-label">Task Amount</label>
                             <input
-                              type="date"
-                              name="startDate"
+                              type="number"
+                              name="amount"
                               className="form-control"
                               onChange={handleChange}
-                            />
-                          </div>
-                          <div className="mb-3">
-                            <label className="form-label">End Date</label>
-                            <input
-                              type="date"
-                              name="endDate"
-                              className="form-control"
-                              onChange={handleChange}
+                              placeholder="Enter task amount"
                             />
                           </div>
                           <div className="mb-3">
                             <label className="form-label">
-                              Project Description
+                              Task Description
                             </label>
                             <textarea
                               name="description"
@@ -511,43 +458,37 @@ function Projects() {
                         <div className="col-md-12">
                           <div className="mb-3 d-flex">
                             <div className="fw-semibold w-25">
-                              📌 Project Name:
+                              📝 Task Name:
                             </div>
                             <div className="text-muted">
-                              {projectData.projectName || "N/A"}
+                              {taskData?.taskName || "N/A"}
                             </div>
                           </div>
-
                           <div className="mb-3 d-flex">
-                            <div className="fw-semibold w-25">
-                              📅 Start Date:
-                            </div>
+                            <div className="fw-semibold w-25">💰 Amount:</div>
                             <div className="text-muted">
-                              {projectData.startDate
-                                ? new Date(
-                                    projectData.startDate
-                                  ).toLocaleDateString("en-GB")
+                              $
+                              {taskData?.amount
+                                ? taskData.amount.toFixed(2)
                                 : "N/A"}
                             </div>
                           </div>
-
                           <div className="mb-3 d-flex">
-                            <div className="fw-semibold w-25">📅 End Date:</div>
+                            <div className="fw-semibold w-25">📊 Status:</div>
                             <div className="text-muted">
-                              {projectData.endDate
-                                ? new Date(
-                                    projectData.endDate
-                                  ).toLocaleDateString("en-GB")
-                                : "N/A"}
+                              {taskData.status === "active" ? (
+                                <span className="badge bg-success">Active</span>
+                              ) : (
+                                <span className="badge bg-danger">Blocked</span>
+                              )}
                             </div>
                           </div>
-
                           <div className="mb-3 d-flex">
                             <div className="fw-semibold w-25">
-                              📝 Description:
+                              📖 Description:
                             </div>
                             <div className="text-muted">
-                              {projectData.description || "N/A"}
+                              {taskData?.description || "N/A"}
                             </div>
                           </div>
                         </div>
@@ -557,60 +498,52 @@ function Projects() {
                         <div className="row">
                           <div className="col-md-12">
                             <div className="mb-3">
-                              <label className="form-label">Project Name</label>
+                              <label className="form-label">Task Name</label>
                               <input
                                 type="text"
-                                name="projectName"
+                                name="taskName"
                                 className="form-control"
-                                value={projectData.projectName}
+                                value={taskData.taskName}
                                 onChange={handleChange}
                               />
                             </div>
                             <div className="mb-3">
-                              <label className="form-label">Start Date</label>
+                              <label className="form-label">Task Amount</label>
                               <input
-                                type="date"
-                                name="startDate"
+                                type="number"
+                                name="amount"
                                 className="form-control"
-                                value={projectData.startDate}
+                                value={taskData.amount}
                                 onChange={handleChange}
                               />
                             </div>
                             <div className="mb-3">
-                              <label className="form-label">End Date</label>
-                              <input
-                                type="date"
-                                name="endDate"
-                                className="form-control"
-                                value={projectData.endDate}
-                                onChange={handleChange}
-                              />
-                            </div>
-                            <div className="mb-3">
-                              <label className="form-label">
-                                Project Description
+                              <label
+                                htmlFor="TaskDescription"
+                                className="form-label"
+                              >
+                                Task Description
                               </label>
                               <textarea
+                                id="TaskDescription"
                                 name="description"
                                 className="form-control"
                                 onChange={handleChange}
-                                value={projectData.description}
+                                value={taskData.description}
                               ></textarea>
                             </div>
+
                             <div className="mb-3">
-                              <label className="form-label">
-                                Project Status
-                              </label>
+                              <label className="form-label">Status</label>
                               <select
                                 name="status"
                                 className="form-select"
-                                value={projectData.status}
+                                value={taskData.status}
                                 onChange={handleChange}
                               >
+                                <option value="">Select Status</option>
                                 <option value="active">Active</option>
-                                <option value="completed">Completed</option>
-                                <option value="on hold">On Hold</option>
-                                <option value="cancelled">Cancelled</option>
+                                <option value="blocked">Blocked</option>
                               </select>
                             </div>
                           </div>
@@ -629,19 +562,19 @@ function Projects() {
                     {modalType === "add" ? (
                       <Button
                         variant="primary"
-                        onClick={saveProjectDetails}
+                        onClick={saveTaskDetails}
                         disabled={disabled}
                       >
-                        Save Project
+                        Save
                       </Button>
                     ) : (
                       modalType === "edit" && (
                         <Button
                           variant="primary"
-                          onClick={updateProjectDetails}
+                          onClick={updateTaskDetails}
                           disabled={disabled}
                         >
-                          Update Project
+                          Update
                         </Button>
                       )
                     )}
@@ -656,4 +589,4 @@ function Projects() {
   );
 }
 
-export default Projects;
+export default Task;

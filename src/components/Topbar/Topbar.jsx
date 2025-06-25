@@ -5,6 +5,7 @@ import "./Topbar.css";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import axios from "axios";
+import { links } from "../../contstants";
 
 export default function Topbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -65,7 +66,7 @@ export default function Topbar() {
 
     try {
       const response = await axios.post(
-        `http://18.209.91.97:3333/api/auth/change-password`,
+        `${links.BASE_URL}auth/change-password`,
         {
           currentPassword,
           newPassword,
@@ -197,7 +198,9 @@ export default function Topbar() {
           </div>
           <div className="row">
             <div className="col-md-6 col-12 mb-3">
-              <label className="form-label" htmlFor="name">Name</label>
+              <label className="form-label" htmlFor="name">
+                Name
+              </label>
               <input
                 type="text"
                 className="form-control"
@@ -207,7 +210,9 @@ export default function Topbar() {
               />
             </div>
             <div className="col-md-6 col-12 mb-3">
-              <label className="form-label" htmlFor="email">Email</label>
+              <label className="form-label" htmlFor="email">
+                Email
+              </label>
               <input
                 type="email"
                 className="form-control"
@@ -217,7 +222,9 @@ export default function Topbar() {
               />
             </div>
             <div className="col-md-6 col-12 mb-3">
-              <label className="form-label" htmlFor="username">Username</label>
+              <label className="form-label" htmlFor="username">
+                Username
+              </label>
               <input
                 type="text"
                 className="form-control"
@@ -227,7 +234,9 @@ export default function Topbar() {
               />
             </div>
             <div className="col-md-6 col-12 mb-3">
-              <label htmlFor="mobile" className="form-label">Mobile</label>
+              <label htmlFor="mobile" className="form-label">
+                Mobile
+              </label>
               <input
                 type="text"
                 className="form-control"

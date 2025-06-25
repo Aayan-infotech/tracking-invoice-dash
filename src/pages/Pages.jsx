@@ -7,6 +7,7 @@ import Button from "react-bootstrap/Button";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import Editor from "../components/TextEditor/TextEditor";
+import { links } from "../contstants";
 
 function Pages() {
   const [loading, setLoading] = useState(true);
@@ -31,7 +32,7 @@ function Pages() {
     try {
       setLoading(true);
       const response = await fetchWithAuth(
-        `http://18.209.91.97:3333/api/pages`,
+        `${links.BASE_URL}pages`,
         {
           method: "GET",
         }
@@ -63,7 +64,6 @@ function Pages() {
 
   const handleView = (index) => {
     const selectedDoc = document[index];
-    console.log("Selected Document:", selectedDoc);
     setFormData({
       pageName: selectedDoc.pageName || "",
       pageURL: selectedDoc.pageURL || selectedDoc.pageUrl || "",
@@ -98,7 +98,7 @@ function Pages() {
 
       if (result.isConfirmed) {
         const response = await axios.delete(
-          `http://18.209.91.97:3333/api/pages/${documentId}`,
+          `${links.BASE_URL}pages/${documentId}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("authToken")}`,
@@ -177,7 +177,7 @@ function Pages() {
     
     try {
       const response = await axios.post(
-        `http://18.209.91.97:3333/api/pages`,
+        `${links.BASE_URL}pages`,
         data,
         {
           headers: {
@@ -214,7 +214,7 @@ function Pages() {
 
     try {
       const response = await axios.put(
-        `http://18.209.91.97:3333/api/pages/${formData._id}`,
+        `${links.BASE_URL}pages/${formData._id}`,
         data,
         {
           headers: {

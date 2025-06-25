@@ -7,11 +7,13 @@ import { fetchWithAuth } from "../../api/authFetch";
 import Button from "react-bootstrap/Button";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import { links } from "../../contstants";
 
-function Task() {
+function ProjectTask() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [tasks, setTasks] = useState([]);
+  const [projectTasks, setProjectTasks] = useState([]);
   const [refreshTable, setRefreshTable] = useState(false);
   const [projects, setProjects] = useState([]);
   const [pagination, setPagination] = useState({
@@ -34,7 +36,7 @@ function Task() {
     try {
       setLoading(true);
       const response = await fetchWithAuth(
-        `http://18.209.91.97:3333/api/projects/project-dropdown`,
+        `${links.BASE_URL}projects/project-dropdown`,
         {
           method: "GET",
         }
@@ -51,7 +53,24 @@ function Task() {
     try {
       setLoading(true);
       const response = await fetchWithAuth(
-        `http://18.209.91.97:3333/api//projects/tasks`,
+        `${links.BASE_URL}projects/task-dropdown`,
+        {
+          method: "GET",
+        }
+      );
+      setTasks(response?.data?.data ? response.data.data : []);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+      toast.error("Failed to fetch tasks");
+    }
+  };
+
+  const fetchProjectTasks = async () => {
+    try {
+      setLoading(true);
+      const response = await fetchWithAuth(
+        `${links.BASE_URL}/projects/project-tasks`,
         {
           method: "GET",
           params: {
@@ -61,7 +80,11 @@ function Task() {
         }
       );
 
-      setTasks(response?.data?.data?.tasks ? response.data.data.tasks : []);
+      setProjectTasks(
+        response?.data?.data?.projectTasks
+          ? response.data.data.projectTasks
+          : []
+      );
       setPagination({
         current_page: response?.data?.data?.current_page || 1,
         total_page: response?.data?.data?.total_page || 1,
@@ -80,7 +103,10 @@ function Task() {
     if (projects.length <= 0) {
       fetchProjects();
     }
-    fetchTasks();
+    if (tasks.length <= 0) {
+      fetchTasks();
+    }
+    fetchProjectTasks();
   }, [pagination.current_page, refreshTable]);
 
   const handlePageChange = (newPage) => {
@@ -93,8 +119,8 @@ function Task() {
     setModalType(null);
     setTaskData({
       projectId: "",
-      taskName: "",
-      taskAmount: "",
+      taskId: "",
+      taskQuantity: "",
       description: "",
     });
   };
@@ -103,8 +129,10 @@ function Task() {
     setModalType("add");
     setTaskData({
       projectId: "",
+      taskId: "",
       taskName: "",
       taskAmount: "",
+      projectName: "",
       taskQuantity: "",
       description: "",
     });
@@ -122,11 +150,10 @@ function Task() {
     try {
       setDisabled(true);
       const result = await axios.post(
-        `http://18.209.91.97:3333/api/projects/tasks`,
+        `${links.BASE_URL}projects/project-tasks`,
         {
-          taskName: taskData.taskName,
+          taskId: taskData.taskId,
           projectId: taskData.projectId,
-          amount: taskData.taskAmount,
           taskQuantity: taskData.taskQuantity,
           description: taskData.description,
         },
@@ -140,8 +167,7 @@ function Task() {
       setModalType(null);
       setTaskData({
         projectId: "",
-        taskName: "",
-        taskAmount: "",
+        taskId: "",
         taskQuantity: "",
         description: "",
       });
@@ -161,10 +187,9 @@ function Task() {
 
   const handleView = async (idx) => {
     const task = tasks[idx];
-    console.log("Selected task:", task);
-
+    console.log("Selected Task:", task);
     const taskDetails = await fetchWithAuth(
-      `http://18.209.91.97:3333/api/projects/task-details/${task._id}`
+      `${links.BASE_URL}projects/task-details/${task._id}`
     );
     const taskData = taskDetails?.data?.data || {};
     setTaskData({
@@ -196,7 +221,7 @@ function Task() {
     try {
       setDisabled(true);
       const result = await axios.put(
-        `http://18.209.91.97:3333/api/projects/tasks/${taskData.id}`,
+        `${links.BASE_URL}projects/tasks/${taskData.id}`,
         {
           projectId: taskData.projectId,
           taskName: taskData.taskName,
@@ -246,7 +271,7 @@ function Task() {
       if (result.isConfirmed) {
         try {
           const response = await axios.delete(
-            `http://18.209.91.97:3333/api/projects/tasks/${taskId}`,
+            `${links.BASE_URL}projects/project-tasks/${taskId}`,
             {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("authToken")}`,
@@ -254,7 +279,8 @@ function Task() {
             }
           );
           toast.success("Task deleted successfully");
-          setTasks((prev) => prev.filter((task) => task._id !== taskId));
+          setProjectTasks((prev) => prev.filter((task) => task._id !== taskId));
+          setRefreshTable((prev) => !prev);
         } catch (err) {
           const response = err.response.data;
           if (response && response.message) {
@@ -302,7 +328,7 @@ function Task() {
         <Topbar />
         <div className="p-4">
           <div className="d-flex justify-content-between align-items-center mb-4">
-            <h3 className="fw-bold text-dark">Task Management</h3>
+            <h3 className="fw-bold text-dark">Project Task</h3>
             <Button title="Add Task" onClick={handleAddTask} variant="primary">
               Add Task
             </Button>
@@ -321,15 +347,15 @@ function Task() {
                 </tr>
               </thead>
               <tbody>
-                {tasks.length > 0 ? (
-                  tasks.map((task, idx) => (
+                {projectTasks.length > 0 ? (
+                  projectTasks.map((task, idx) => (
                     <tr key={task._id}>
-                      <td>{task.projectDetails.projectName}</td>
+                      <td>{task.projectName}</td>
                       <td>{task.taskName}</td>
                       <td>
                         {task.amount ? (
                           <span className="text-success fw-semibold">
-                            {task.amount.toFixed(2)}
+                            ${task.amount.toFixed(2)}
                           </span>
                         ) : (
                           <span className="text-muted">N/A</span>
@@ -358,18 +384,18 @@ function Task() {
                           onClick={() => handleEdit(idx)}
                           title="Edit Project"
                         ></i>
-                        <i
+                        {/* <i
                           className="bi bi-trash text-danger fs-5 ms-3"
                           style={{ cursor: "pointer" }}
                           onClick={() => handleDelete(task._id)}
                           title="Delete Project"
-                        ></i>
+                        ></i> */}
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="5" className="text-center">
+                    <td colSpan="6" className="text-center">
                       No tasks found
                     </td>
                   </tr>
@@ -491,24 +517,20 @@ function Task() {
                             </select>
                           </div>
                           <div className="mb-3">
-                            <label className="form-label">Task Name</label>
-                            <input
-                              type="text"
-                              name="taskName"
-                              className="form-control"
+                            <label className="form-label">Select Task</label>
+                            <select
+                              name="taskId"
+                              className="form-select form-control"
                               onChange={handleChange}
-                              placeholder="Enter task name"
-                            />
-                          </div>
-                          <div className="mb-3">
-                            <label className="form-label">Task Amount</label>
-                            <input
-                              type="number"
-                              name="taskAmount"
-                              className="form-control"
-                              onChange={handleChange}
-                              placeholder="Enter task amount"
-                            />
+                            >
+                              <option value="">Select Task</option>
+                              {tasks.length > 0 &&
+                                tasks.map((task) => (
+                                  <option value={task._id} key={task._id}>
+                                    {task.taskName}
+                                  </option>
+                                ))}
+                            </select>
                           </div>
                           <div className="mb-3">
                             <label className="form-label">Task Quantity</label>
@@ -626,7 +648,11 @@ function Task() {
                                             </span>
                                           )}
                                         </td>
-                                        <td>{new Date(update.updatedAt).toLocaleString('en-US')}</td>
+                                        <td>
+                                          {new Date(
+                                            update.updatedAt
+                                          ).toLocaleString("en-US")}
+                                        </td>
                                       </tr>
                                     )
                                   )
@@ -760,4 +786,4 @@ function Task() {
   );
 }
 
-export default Task;
+export default ProjectTask;

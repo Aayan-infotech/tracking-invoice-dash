@@ -15,6 +15,7 @@ import {
 } from "recharts";
 import { fetchWithAuth } from "../../api/authFetch";
 import { useEffect, useState } from "react";
+import { links } from "../../contstants";
 
 export default function Page() {
   const [totalUsers, setTotalUsers] = useState(0);
@@ -24,7 +25,7 @@ export default function Page() {
   const fetchDetails = async () => {
     try {
       const response = await fetchWithAuth(
-        `http://18.209.91.97:3333/api/users/dashboard`,
+        `${links.BASE_URL}users/dashboard`,
         {
           method: "GET",
         }

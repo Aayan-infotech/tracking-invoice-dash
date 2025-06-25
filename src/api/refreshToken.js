@@ -1,10 +1,11 @@
 import axios from "axios";
 import { Navigate } from "react-router-dom";
+import { links } from "../contstants";
 
 export const refreshAccessToken = async () => {
   try {
     const response = await axios.post(
-      `http://18.209.91.97:3333/api/auth/refresh-token`,
+      `${links.BASE_URL}auth/refresh-token`,
       {
         refreshToken: localStorage.getItem("refreshToken"),
       }

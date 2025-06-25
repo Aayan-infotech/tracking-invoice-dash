@@ -4,17 +4,21 @@ import Dashboard from "../pages/Dashboard/Dashboard";
 import Users from "../pages/UserManagement/Users";
 import ProtectedRoute from "./ProtectedRoute";
 import Projects from "../pages/Projects/Projects";
-import Task from "../pages/Projects/Task";
+import Task from "../pages/TaskManagement/Task";
 import AssignTasks from "../pages/Projects/AssignTasks";
 import QualityAssurance from "../pages/Projects/QuanlityAssuarnce";
 import TermsOfService from "../pages/TermsOfService/TermsOfService";
 import Pages from "../pages/Pages";
 import ProjectInvoices from "../pages/Projects/ProjectInvoices";
+import ProjectTask from "../pages/Projects/ProjectTask";
+import Homepage from "../pages/Home/Homepage";
 
 export default function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Login />} />
+      {/* Public Routes */}
+      <Route path="/" element={<Homepage />} />
+      <Route path="/login" element={<Login />} />
 
       {/* Protected Routes */}
       <Route
@@ -33,6 +37,14 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/tasks"
+        element={
+          <ProtectedRoute>
+            <Task />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Project Management */}
       <Route
@@ -45,10 +57,10 @@ export default function AppRoutes() {
       />
 
       <Route
-        path="/tasks"
+        path="/projectTasks"
         element={
           <ProtectedRoute>
-            <Task />
+            <ProjectTask />
           </ProtectedRoute>
         }
       />
