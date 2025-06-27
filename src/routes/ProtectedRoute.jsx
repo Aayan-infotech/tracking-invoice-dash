@@ -6,13 +6,12 @@ const ProtectedRoute = ({ children }) => {
   const role = localStorage.getItem('userRole');
 
 
-
   if (!token || role !== 'admin') {
     // Clear any existing auth data
     localStorage.removeItem('authToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('userRole');
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login" replace />;
   }
   return children;
 };

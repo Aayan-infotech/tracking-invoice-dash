@@ -10,6 +10,7 @@ export default function Sidebar() {
   const [openTasks, setOpenTasks] = useState(false);
   const [openProjects, setOpenProjects] = useState(false);
   const [openPages, setOpenPages] = useState(false);
+  const [openDocumentType, setOpenDocumentType] = useState(false);
 
   useEffect(() => {
     if (pathname.startsWith("/users")) {
@@ -17,6 +18,9 @@ export default function Sidebar() {
     }
     if (pathname.startsWith("/tasks")) {
       setOpenTasks(true);
+    }
+    if (pathname.startsWith("/document-types")) {
+      setOpenDocumentType(true);
     }
     if (
       pathname.startsWith("/projects") ||
@@ -104,6 +108,36 @@ export default function Sidebar() {
                   }`}
                 >
                   All Tasks
+                </Link>
+              </li>
+            </ul>
+          )}
+        </li>
+
+        <li className="sidebar-item">
+          <div
+            className="sidebar-link"
+            onClick={() => setOpenDocumentType(!openDocumentType)}
+          >
+            <span>
+              <i className="bi bi-people-fill me-2"></i>Document Type
+            </span>
+            <i
+              className={`bi ${
+                openDocumentType ? "bi-chevron-up" : "bi-chevron-down"
+              }`}
+            ></i>
+          </div>
+          {openDocumentType && (
+            <ul className="sidebar-submenu">
+              <li>
+                <Link
+                  to="/document-types"
+                  className={`sidebar-sublink ${
+                    pathname === "/document-types" ? "active" : ""
+                  }`}
+                >
+                  All Document Types
                 </Link>
               </li>
             </ul>

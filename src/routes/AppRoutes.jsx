@@ -12,12 +12,18 @@ import Pages from "../pages/Pages";
 import ProjectInvoices from "../pages/Projects/ProjectInvoices";
 import ProjectTask from "../pages/Projects/ProjectTask";
 import Homepage from "../pages/Home/Homepage";
+import DocumentType from "../pages/DocumentType/DocumentType";
+import PrivacyPolicy from "../pages/PrivacyPolicy/PrivacyPolicy";
+import TermCondition from "../pages/Term&Conditions/TermCondition";
 
 export default function AppRoutes() {
   return (
     <Routes>
       {/* Public Routes */}
       <Route path="/" element={<Homepage />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+      <Route path="/terms-and-conditions" element={<TermCondition />} />
+
       <Route path="/login" element={<Login />} />
 
       {/* Protected Routes */}
@@ -61,6 +67,15 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute>
             <ProjectTask />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/document-types"
+        element={
+          <ProtectedRoute>
+            <DocumentType />
           </ProtectedRoute>
         }
       />

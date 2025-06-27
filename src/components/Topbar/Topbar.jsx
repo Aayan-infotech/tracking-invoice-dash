@@ -35,7 +35,7 @@ export default function Topbar() {
     toast.success("Logout successful!");
 
     setTimeout(() => {
-      navigate("/");
+      navigate("/login");
     }, 1600);
   };
 

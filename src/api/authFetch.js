@@ -31,7 +31,7 @@ export const fetchWithAuth = async (url, options = {}) => {
           });
           return retryResponse;
         } catch (error) {
-          window.location.href = "/";
+          window.location.href = "/login";
         }
       }
     }

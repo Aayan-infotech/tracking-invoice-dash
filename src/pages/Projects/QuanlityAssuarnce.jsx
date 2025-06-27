@@ -8,7 +8,7 @@ import Button from "react-bootstrap/Button";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import Editor from "../../components/TextEditor/TextEditor";
-import {links} from "../../contstants";
+import { links } from "../../contstants";
 
 function QualityAssurance() {
   const [loading, setLoading] = useState(true);
@@ -23,14 +23,13 @@ function QualityAssurance() {
   });
   const [modalType, setModalType] = useState(null);
   const [disabled, setDisabled] = useState(false);
-  const [documentType, setDocumentType] = useState(null);
   const [selectedDocIndex, setSelectedDocIndex] = useState(null);
   const [formData, setFormData] = useState({
     projectId: "",
-    documentName: "",
-    // documentDescription: "",
+    documentTypeId: "",
     documentFile: null,
   });
+  const [documentTypes, setDocumentTypes] = useState([]);
 
   const fetchProjects = async () => {
     try {
@@ -44,6 +43,26 @@ function QualityAssurance() {
       setProjects(response?.data?.data ? response.data.data : []);
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to fetch projects");
+    }
+  };
+
+  const fetchDocumentTypes = async () => {
+    try {
+      const response = await fetchWithAuth(
+        `${links.BASE_URL}projects/get-document-type-dropdown`,
+        {
+          method: "GET",
+        }
+      );
+      if (response?.data?.data) {
+        setDocumentTypes(response.data.data);
+      } else {
+        setDocumentTypes([]);
+      }
+    } catch (err) {
+      toast.error(
+        err.response?.data?.message || "Failed to fetch document types"
+      );
     }
   };
 
@@ -71,6 +90,9 @@ function QualityAssurance() {
     if (projects.length === 0) {
       fetchProjects();
     }
+    if (documentTypes.length === 0) {
+      fetchDocumentTypes();
+    }
     fetchDocument();
   }, []);
 
@@ -78,7 +100,7 @@ function QualityAssurance() {
     setModalType("add");
     setFormData({
       projectId: "",
-      documentName: "",
+      documentTypeId: "",
       documentDescription: "",
     });
   };
@@ -103,7 +125,7 @@ function QualityAssurance() {
     setFormData({
       projectId: selectedDoc.projectId || "",
       projectName: selectedDoc.projectName || "",
-      documentName: selectedDoc.documentName || "",
+      documentTypeId: selectedDoc.documentTypeId || "",
       documentFile: null,
       status: selectedDoc.status || false,
       _id: selectedDoc._id || "",
@@ -186,24 +208,24 @@ function QualityAssurance() {
   };
 
   const saveDocument = async () => {
-    if (!formData.projectId || !formData.documentName) {
+    if (!formData.projectId || !formData.documentTypeId) {
       if (!formData.projectId) {
         toast.error("Please select a project.");
-      } else if (!formData.documentName) {
-        toast.error("Please enter a document name.");
+      } else if (!formData.documentTypeId) {
+        toast.error("Please select a document type.");
       }
       return;
     }
     setDisabled(true);
     const data = {
       projectId: formData.projectId,
-      documentName: formData.documentName,
+      documentTypeId: formData.documentTypeId,
       documentFile: formData.documentFile,
     };
     try {
       const formData = new FormData();
       formData.append("projectId", data.projectId);
-      formData.append("documentName", data.documentName);
+      formData.append("documentTypeId", data.documentTypeId);
       formData.append("documentFile", data.documentFile);
 
       const response = await axios.post(
@@ -228,11 +250,11 @@ function QualityAssurance() {
   };
 
   const updateDocument = async () => {
-    if (!formData.projectId || !formData.documentName) {
+    if (!formData.projectId || !formData.documentTypeId) {
       if (!formData.projectId) {
         toast.error("Please select a project.");
-      } else if (!formData.documentName) {
-        toast.error("Please enter a document name.");
+      } else if (!formData.documentTypeId) {
+        toast.error("Please Select a document type.");
       }
       return;
     }
@@ -240,13 +262,13 @@ function QualityAssurance() {
     setDisabled(true);
     const data = {
       projectId: formData.projectId,
-      documentName: formData.documentName,
+      documentTypeId: formData.documentTypeId,
       documentFile: formData.documentFile,
     };
 
     const updatedFormData = new FormData();
     updatedFormData.append("projectId", data.projectId);
-    updatedFormData.append("documentName", data.documentName);
+    updatedFormData.append("documentTypeId", data.documentTypeId);
     if (data.documentFile) {
       updatedFormData.append("documentFile", data.documentFile);
     }
@@ -505,35 +527,24 @@ function QualityAssurance() {
                               htmlFor="documentName"
                               className="form-label"
                             >
-                              Document Name *
+                              Select Document Type *
                             </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              id="documentName"
-                              name="documentName"
-                              value={formData.documentName}
+                            <select
+                              name="documentTypeId"
+                              className="form-select form-control"
+                              id="documentTypeId"
+                              value={formData.documentTypeId}
                               onChange={handleChange}
-                              placeholder="Enter document name"
-                            />
-                          </div>
-
-                          {/* <div className="mb-3">
-                            <label
-                              htmlFor="documentDescription"
-                              className="form-label"
                             >
-                              Document Description
-                            </label>
-                            <div className="text-editor-container mb-5">
-                              <Editor
-                                name="documentDescription"
-                                value={formData.documentDescription}
-                                onChange={handleChange}
-                                placeholder="Enter document description..."
-                              />
-                            </div>
-                          </div> */}
+                              <option value="">Select Document Type</option>
+                              {documentTypes.length > 0 &&
+                                documentTypes.map((docType) => (
+                                  <option value={docType._id} key={docType._id}>
+                                    {docType.name}
+                                  </option>
+                                ))}
+                            </select>
+                          </div>
                           <div className="mb-3">
                             <label htmlFor="formFile" className="form-label">
                               Upload Document *
@@ -648,17 +659,26 @@ function QualityAssurance() {
                               htmlFor="documentName"
                               className="form-label"
                             >
-                              Document Name *
+                              Select Document Type *
                             </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              id="documentName"
-                              name="documentName"
-                              value={formData.documentName}
+                            <select
+                              name="documentTypeId"
+                              className="form-select form-control"
+                              id="documentTypeId"
+                              value={formData.documentTypeId}
                               onChange={handleChange}
-                              placeholder="Enter document name"
-                            />
+                            >
+                              <option value="">Select Document Type</option>
+                              {documentTypes.length > 0 &&
+                                documentTypes.map((docType) => (
+                                  <option
+                                    value={docType._id}
+                                    key={docType._id}
+                                  >
+                                    {docType.name}
+                                  </option>
+                                ))}
+                            </select>
                           </div>
 
                           {/* <div className="mb-3">

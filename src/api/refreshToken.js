@@ -25,7 +25,7 @@ export const refreshAccessToken = async () => {
     localStorage.removeItem("userRole");
     localStorage.removeItem("profileImage");
     // Redirect to login page if refresh token fails
-    window.location.href = "/"; 
+    window.location.href = "/login"; 
     return null;
   }
 };

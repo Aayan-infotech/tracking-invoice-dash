@@ -6,7 +6,7 @@ import Header from "../Header/Header";
 function HeroSection() {
   return (
     <div className="hero-container">
-      <Header />
+      <Header color="white" />
 
       <section className="hero-section text-white d-flex align-items-center justify-content-center px-3">
         <Container>

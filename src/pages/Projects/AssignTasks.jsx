@@ -90,7 +90,7 @@ function AssignTasks() {
           },
         }
       );
-      console.log("Assigned Tasks Response:", response.data);
+
       if (response.data.success) {
         setAssignedTasks(response?.data?.data?.tasks || []);
         setPagination({
@@ -217,7 +217,6 @@ function AssignTasks() {
 
   const handleEdit = (idx) => {
     const assignedTask = assignedTasks[idx];
-    console.log("Editing Assigned Task:", assignedTask);
     setFormData({
       id: assignedTask._id,
       projectId: assignedTask.projectId || "",
@@ -607,7 +606,6 @@ function AssignTasks() {
                                   ))}
                               </select>
                             </div>
-                            {console.log(tasks)}
                             <div className="mb-3">
                               <label htmlFor="Task" className="form-label">
                                 Select Task

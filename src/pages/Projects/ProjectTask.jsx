@@ -186,29 +186,29 @@ function ProjectTask() {
   };
 
   const handleView = async (idx) => {
-    const task = tasks[idx];
-    console.log("Selected Task:", task);
+    const projectTask = projectTasks[idx];
     const taskDetails = await fetchWithAuth(
-      `${links.BASE_URL}projects/task-details/${task._id}`
+      `${links.BASE_URL}projects/task-details/${projectTask._id}`
     );
     const taskData = taskDetails?.data?.data || {};
     setTaskData({
-      projectName: task.projectDetails.projectName,
-      taskName: task.taskName,
-      taskAmount: task.amount ? task.amount : "N/A",
-      taskQuantity: task.taskQuantity || "N/A",
-      description: task.description || "N/A",
+      projectName: projectTask.projectName,
+      taskName: projectTask.taskName,
+      taskAmount: projectTask.amount ? projectTask.amount : "N/A",
+      taskQuantity: projectTask.taskQuantity || "N/A",
+      description: projectTask.description || "N/A",
       taskUpdateHistory: taskData.taskUpdateHistory || [],
     });
     setModalType("view");
   };
 
   const handleEdit = (idx) => {
-    const task = tasks[idx];
+    const task = projectTasks[idx];
     setTaskData({
       id: task._id,
-      projectId: task.projectDetails._id,
-      projectName: task.projectDetails.projectName,
+      taskId: task.taskId,
+      projectId: task.projectId,
+      projectName: task.projectName,
       description: task.description || "",
       taskName: task.taskName || "",
       taskAmount: task.amount || "",
@@ -671,7 +671,7 @@ function ProjectTask() {
                     ) : (
                       <form>
                         <div className="row">
-                          <div className="col-md-12">
+                          <div className="col-md-6">
                             <div className="mb-3">
                               <label htmlFor="Project" className="form-label">
                                 Select Project
@@ -696,16 +696,29 @@ function ProjectTask() {
                                   ))}
                               </select>
                             </div>
+                          </div>
+                          <div className="col-md-6">
                             <div className="mb-3">
-                              <label className="form-label">Task Name</label>
-                              <input
-                                type="text"
-                                name="taskName"
-                                className="form-control"
-                                value={taskData.taskName}
+                              <label className="form-label">Select Task</label>
+                              <select
+                                name="taskId"
+                                className="form-select form-control"
+                                id="taskId"
+                                value={taskData.taskId}
                                 onChange={handleChange}
-                              />
+                              >
+                                <option value="">Select Task</option>
+                                <option value="">Select Task</option>
+                                {tasks.length > 0 &&
+                                  tasks.map((task) => (
+                                    <option value={task._id} key={task._id}>
+                                      {task.taskName}
+                                    </option>
+                                  ))}
+                              </select>
                             </div>
+                          </div>
+                          <div className="col-md-12">
                             <div className="mb-3">
                               <label className="form-label">Task Amount</label>
                               <input

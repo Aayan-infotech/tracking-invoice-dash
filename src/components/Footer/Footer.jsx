@@ -1,5 +1,6 @@
 import React from "react";
 import { Container } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 function Footer() {
   return (
@@ -15,46 +16,33 @@ function Footer() {
               (IPA)
             </h5>
             <div className="d-flex gap-3 mt-3">
-              <a href="#">
-                <img
-                  src="https://cdn-icons-png.flaticon.com/512/733/733547.png"
-                  alt="Facebook"
-                  width={24}
-                />
-              </a>
-              <a href="#">
-                <img
-                  src="https://cdn-icons-png.flaticon.com/512/733/733579.png"
-                  alt="Twitter"
-                  width={24}
-                />
-              </a>
-              <a href="#">
-                <img
-                  src="https://cdn-icons-png.flaticon.com/512/733/733561.png"
-                  alt="LinkedIn"
-                  width={24}
-                />
-              </a>
+              <Link to="#">
+                <i className="bi bi-facebook text-white" width={24}></i>
+              </Link>
+              <Link to="#">
+                <i className="bi bi-twitter-x text-white" width={24}></i>
+              </Link>
+              <Link to="#">
+                <i className="bi bi-linkedin text-white" width={24}></i>
+              </Link>
             </div>
           </div>
           <div className="col-md-4 mb-4 mb-md-0">
-            <h6>About us</h6>
             <ul className="list-unstyled mt-3">
               <li>
-                <a href="#" className="footer-link">
+                <Link to="/" className="footer-link">
                   Home
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="footer-link">
+                <Link to="/privacy-policy" className="footer-link">
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="footer-link">
+                <Link to="/terms-and-conditions" className="footer-link">
                   Terms &amp; Conditions
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -63,13 +51,15 @@ function Footer() {
             <p className="small">
               What are you waiting for?! Subscribe and follow our progress!
             </p>
-            <form className="d-flex">
+            <form className="d-md-flex">
               <input
                 type="email"
                 className="form-control me-2"
                 placeholder="email@company.com"
               />
-              <button className="btn btn-primary">Subscribe now</button>
+              <button className="btn btn-primary mt-md-0 mt-2" style={{ minWidth: "150px" }}>
+                Subscribe now
+              </button>
             </form>
           </div>
         </div>
