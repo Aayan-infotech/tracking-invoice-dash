@@ -12,7 +12,7 @@ import Pages from "../pages/Pages";
 import ProjectInvoices from "../pages/Projects/ProjectInvoices";
 import ProjectTask from "../pages/Projects/ProjectTask";
 import Homepage from "../pages/Home/Homepage";
-import DocumentType from "../pages/DocumentType/DocumentType";
+// import DocumentType from "../pages/DocumentType/DocumentType";
 import PrivacyPolicy from "../pages/PrivacyPolicy/PrivacyPolicy";
 import TermCondition from "../pages/Term&Conditions/TermCondition";
 
@@ -23,6 +23,11 @@ export default function AppRoutes() {
       <Route path="/" element={<Homepage />} />
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="/terms-and-conditions" element={<TermCondition />} />
+
+      {/* Not Found */}
+      <Route path="*" element={<h1>Page Not Found</h1>} />
+
+      {/* Login Route */}
 
       <Route path="/login" element={<Login />} />
 
@@ -71,14 +76,14 @@ export default function AppRoutes() {
         }
       />
 
-      <Route
+      {/* <Route
         path="/document-types"
         element={
           <ProtectedRoute>
             <DocumentType />
           </ProtectedRoute>
         }
-      />
+      /> */}
 
       <Route
         path="/invoices"

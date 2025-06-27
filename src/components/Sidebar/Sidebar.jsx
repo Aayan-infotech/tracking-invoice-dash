@@ -10,7 +10,7 @@ export default function Sidebar() {
   const [openTasks, setOpenTasks] = useState(false);
   const [openProjects, setOpenProjects] = useState(false);
   const [openPages, setOpenPages] = useState(false);
-  const [openDocumentType, setOpenDocumentType] = useState(false);
+  // const [openDocumentType, setOpenDocumentType] = useState(false);
 
   useEffect(() => {
     if (pathname.startsWith("/users")) {
@@ -19,9 +19,9 @@ export default function Sidebar() {
     if (pathname.startsWith("/tasks")) {
       setOpenTasks(true);
     }
-    if (pathname.startsWith("/document-types")) {
-      setOpenDocumentType(true);
-    }
+    // if (pathname.startsWith("/document-types")) {
+    //   setOpenDocumentType(true);
+    // }
     if (
       pathname.startsWith("/projects") ||
       pathname.startsWith("/projectTasks") ||
@@ -114,7 +114,7 @@ export default function Sidebar() {
           )}
         </li>
 
-        <li className="sidebar-item">
+        {/* <li className="sidebar-item">
           <div
             className="sidebar-link"
             onClick={() => setOpenDocumentType(!openDocumentType)}
@@ -142,7 +142,7 @@ export default function Sidebar() {
               </li>
             </ul>
           )}
-        </li>
+        </li> */}
 
         {/* Project Management */}
         <li className="sidebar-item">
