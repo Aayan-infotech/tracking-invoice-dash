@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import Editor from "../components/TextEditor/TextEditor";
 import { links } from "../contstants";
+import Loading from "../components/Loading/Loading";
 
 function Pages() {
   const [loading, setLoading] = useState(true);
@@ -224,7 +225,9 @@ function Pages() {
     }
   };
 
-  
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <>

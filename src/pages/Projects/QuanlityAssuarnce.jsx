@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import Pagination from "../../components/Pagination";
 import { links } from "../../contstants";
+import Loading from "../../components/Loading/Loading";
 
 function QualityAssurance() {
   const [loading, setLoading] = useState(true);
@@ -294,7 +295,9 @@ function QualityAssurance() {
     }
   };
 
-
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <>

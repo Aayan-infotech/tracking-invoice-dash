@@ -16,11 +16,13 @@ import {
 import { fetchWithAuth } from "../../utils/authFetch";
 import { useEffect, useState } from "react";
 import { links } from "../../contstants";
+import Loading from "../../components/Loading/Loading";
 
 export default function Page() {
   const [totalUsers, setTotalUsers] = useState(0);
   const [totalProjects, setTotalProjects] = useState(0);
   const [totalTasks, setTotalTasks] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   const fetchDetails = async () => {
     try {
@@ -32,7 +34,9 @@ export default function Page() {
       setTotalUsers(data.totalUsers || 0);
       setTotalProjects(data.totalProjects || 0);
       setTotalTasks(data.totalTasks || 0);
+      setLoading(false);
     } catch (err) {
+      setLoading(false);
       toast.error(err.message || "Failed to fetch details");
     }
   };
@@ -40,6 +44,10 @@ export default function Page() {
   useEffect(() => {
     fetchDetails();
   }, []);
+
+  if (loading) {
+    return <Loading />;
+  }
 
   const metrics = [
     {

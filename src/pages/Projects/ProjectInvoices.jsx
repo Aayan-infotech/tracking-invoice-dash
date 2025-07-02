@@ -8,6 +8,7 @@ import Button from "react-bootstrap/Button";
 import axios from "axios";
 
 import { links } from "../../contstants";
+import Loading from "../../components/Loading/Loading";
 
 function ProjectInvoices() {
   const [loading, setLoading] = useState(true);
@@ -136,6 +137,9 @@ function ProjectInvoices() {
     }
   };
 
+    if (loading) {
+    return <Loading />;
+  }
 
   return (
     <>

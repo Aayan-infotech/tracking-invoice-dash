@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import Pagination from "../../components/Pagination";
 import Swal from "sweetalert2";
 import { links } from "../../contstants";
+import Loading from "../../components/Loading/Loading";
 
 function ProjectTask() {
   const [loading, setLoading] = useState(true);
@@ -293,7 +294,9 @@ function ProjectTask() {
       }
     });
   };
-
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <>

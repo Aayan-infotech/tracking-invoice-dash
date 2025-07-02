@@ -7,16 +7,17 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
 import { logout } from "../../store/actions/user";
+import Loading from "../../components/Loading/Loading";
 
 const AdminLayout = () => {
   const navigate = useNavigate();
   const userState = useSelector((state) => state.user);
 
-//   useEffect(() => {
-//     if (userState.userInfo || userState.userInfo?.user?.role !== "admin") {
-//       navigate("/login");
-//     }
-//   }, [navigate, , userState.userInfo]);
+  //   useEffect(() => {
+  //     if (userState.userInfo || userState.userInfo?.user?.role !== "admin") {
+  //       navigate("/login");
+  //     }
+  //   }, [navigate, , userState.userInfo]);
 
   const {
     data: profileData,

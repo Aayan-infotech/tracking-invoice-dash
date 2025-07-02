@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import Pagination from "../../components/Pagination";
 import { links } from "../../contstants";
+import Loading from "../../components/Loading/Loading";
 
 function Projects() {
   const [loading, setLoading] = useState(true);
@@ -246,6 +247,9 @@ function Projects() {
     });
   };
 
+    if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div>

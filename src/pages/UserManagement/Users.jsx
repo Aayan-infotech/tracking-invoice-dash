@@ -5,6 +5,7 @@ import { fetchWithAuth } from "../../utils/authFetch";
 import { toast } from "react-toastify";
 import { images, links } from "../../contstants";
 import Pagination from "../../components/Pagination";
+import Loading from "../../components/Loading/Loading";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -145,7 +146,9 @@ const Users = () => {
     }
   };
 
-
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <>
