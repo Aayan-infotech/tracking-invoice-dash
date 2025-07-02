@@ -10,8 +10,10 @@ import Swal from "sweetalert2";
 import Pagination from "../../components/Pagination";
 import { links } from "../../contstants";
 import Loading from "../../components/Loading/Loading";
+import { useSelector } from "react-redux";
 
 function Projects() {
+  const userState = useSelector((state) => state.user);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [projects, setProjects] = useState([]);
@@ -109,7 +111,7 @@ function Projects() {
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            Authorization: `Bearer ${userState.userInfo.accessToken}`,
           },
         }
       );
@@ -181,7 +183,7 @@ function Projects() {
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            Authorization: `Bearer ${userState.userInfo.accessToken}`,
           },
         }
       );
@@ -227,7 +229,7 @@ function Projects() {
             `${links.BASE_URL}projects/delete/${projectId}`,
             {
               headers: {
-                Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+                Authorization: `Bearer ${userState.userInfo.accessToken}`,
               },
             }
           );

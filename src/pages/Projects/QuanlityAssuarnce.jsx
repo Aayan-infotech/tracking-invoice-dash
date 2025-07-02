@@ -10,8 +10,10 @@ import Swal from "sweetalert2";
 import Pagination from "../../components/Pagination";
 import { links } from "../../contstants";
 import Loading from "../../components/Loading/Loading";
+import { useSelector } from "react-redux";
 
 function QualityAssurance() {
+  const userState = useSelector((state) => state.user);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [projects, setProjects] = useState([]);
@@ -151,7 +153,7 @@ function QualityAssurance() {
           `${links.BASE_URL}projects/quality-assurance/${documentId}`,
           {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+              Authorization: `Bearer ${userState.userInfo.accessToken}`,
             },
           }
         );
@@ -234,7 +236,7 @@ function QualityAssurance() {
         formData,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            Authorization: `Bearer ${userState.userInfo.accessToken}`,
             "Content-Type": "multipart/form-data",
           },
         }
@@ -280,7 +282,7 @@ function QualityAssurance() {
         updatedFormData,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            Authorization: `Bearer ${userState.userInfo.accessToken}`,
             "Content-Type": "multipart/form-data",
           },
         }

@@ -6,8 +6,6 @@ import { refreshAccessToken } from "../services/index/users";
 export const fetchWithAuth = async (url, options = {}) => {
   const account = localStorage.getItem("account");
   const token = account ? JSON.parse(account).accessToken : null;
-  console.log(token);
-
   try {
     const response = await axios({
       ...options,

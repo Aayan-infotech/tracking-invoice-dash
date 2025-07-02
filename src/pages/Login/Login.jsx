@@ -56,9 +56,7 @@ const LoginPage = () => {
   });
 
   const submitHandler = (data) => {
-    console.log("Form is valid:", isValid);
     const { username, password } = data;
-    console.log("Submitting login:", { username, password });
     mutate({ username, password });
   };
 

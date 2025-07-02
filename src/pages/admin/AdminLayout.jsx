@@ -29,14 +29,12 @@ const AdminLayout = () => {
     },
     queryKey: ["profile"],
     onSuccess: (data) => {
-      console.log("Profile data:", data);
       if (!data?.role || data.role !== "admin") {
         navigate("/login");
         toast.error("Your are not allowed to access admin panel");
       }
     },
     onError: (err) => {
-      console.log(err);
       navigate("/login");
       toast.error("Your are not allowed to access admin panel");
     },

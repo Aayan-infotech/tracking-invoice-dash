@@ -5,8 +5,10 @@ import "./Users.css";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { fetchWithAuth } from "../../api/authFetch";
+import { useSelector } from "react-redux";
 
 export default function DeleteUser() {
+  const userState = useSelector((state) => state.user);
   const [deleteRequests, setDeleteRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedRequest, setSelectedRequest] = useState(null);
@@ -58,7 +60,7 @@ export default function DeleteUser() {
   const processRequest = async () => {
   try {
     setProcessing(true);
-    const token = localStorage.getItem("authToken");
+    const token = userState.userInfo.accessToken;
 
     const response = await axios.put(
       "http://18.209.91.97:3030/api/users/update-delete-request",

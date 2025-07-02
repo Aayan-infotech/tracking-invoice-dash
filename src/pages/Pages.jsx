@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import Sidebar from "../components/Sidebar/Sidebar";
 import Topbar from "../components/Topbar/Topbar";
 import axios from "axios";
@@ -9,8 +9,10 @@ import Swal from "sweetalert2";
 import Editor from "../components/TextEditor/TextEditor";
 import { links } from "../contstants";
 import Loading from "../components/Loading/Loading";
+import { useSelector } from "react-redux";
 
 function Pages() {
+  const userState = useSelector((state) => state.user);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [document, setDocument] = useState([]);
@@ -98,7 +100,7 @@ function Pages() {
           `${links.BASE_URL}pages/${documentId}`,
           {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+              Authorization: `Bearer ${userState.userInfo.accessToken}`,
             },
           }
         );
@@ -175,7 +177,7 @@ function Pages() {
     try {
       const response = await axios.post(`${links.BASE_URL}pages`, data, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          Authorization: `Bearer ${userState.userInfo.accessToken}`,
         },
       });
       toast.success("Page saved successfully");
@@ -211,7 +213,7 @@ function Pages() {
         data,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            Authorization: `Bearer ${userState.userInfo.accessToken}`,
           },
         }
       );

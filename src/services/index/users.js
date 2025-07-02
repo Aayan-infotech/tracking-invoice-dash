@@ -1,4 +1,6 @@
 import axios from "axios";
+import { userActions } from "../../store/reducers/userReducers";
+import store from "../../store";
 
 export const login = async ({ username, password }) => {
     try {
@@ -31,6 +33,8 @@ export const refreshAccessToken = async () => {
             refreshToken: newRefreshToken,
         };
         localStorage.setItem("account", JSON.stringify(updatedAccount));
+        store.dispatch(userActions.setUserInfo(updatedAccount));
+
         return newToken;
     } catch (error) {
         console.error("Refresh token failed", error);

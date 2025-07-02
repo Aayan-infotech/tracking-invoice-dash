@@ -10,8 +10,10 @@ import Pagination from "../../components/Pagination";
 import Swal from "sweetalert2";
 import { links } from "../../contstants";
 import Loading from "../../components/Loading/Loading";
+import { useSelector } from "react-redux";
 
 function ProjectTask() {
+  const userState = useSelector((state) => state.user);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [tasks, setTasks] = useState([]);
@@ -161,7 +163,7 @@ function ProjectTask() {
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            Authorization: `Bearer ${userState.userInfo.accessToken}`,
           },
         }
       );
@@ -233,7 +235,7 @@ function ProjectTask() {
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            Authorization: `Bearer ${userState.userInfo.accessToken}`,
           },
         }
       );
@@ -276,7 +278,7 @@ function ProjectTask() {
             `${links.BASE_URL}projects/project-tasks/${taskId}`,
             {
               headers: {
-                Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+                Authorization: `Bearer ${userState.userInfo.accessToken}`,
               },
             }
           );

@@ -8,8 +8,10 @@ import Button from "react-bootstrap/Button";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { links } from "../../contstants";
+import { useSelector } from "react-redux";
 
 function Task() {
+  const userState = useSelector((state) => state.user);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [documentTypes, setDocumentTypes] = useState([]);
@@ -103,7 +105,7 @@ function Task() {
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            Authorization: `Bearer ${userState.userInfo.accessToken}`,
           },
         }
       );
@@ -163,7 +165,7 @@ function Task() {
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            Authorization: `Bearer ${userState.userInfo.accessToken}`,
           },
         }
       );
@@ -203,7 +205,7 @@ function Task() {
             `${links.BASE_URL}projects/tasks/${taskId}`,
             {
               headers: {
-                Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+                Authorization: `Bearer ${userState.userInfo.accessToken}`,
               },
             }
           );

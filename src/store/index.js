@@ -6,6 +6,7 @@ const userInfoFromStorage = localStorage.getItem("account")
   ? JSON.parse(localStorage.getItem("account"))
   : null;
 
+
 const initialState = {
   user: { userInfo: userInfoFromStorage },
 };

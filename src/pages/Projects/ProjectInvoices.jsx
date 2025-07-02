@@ -9,8 +9,10 @@ import axios from "axios";
 
 import { links } from "../../contstants";
 import Loading from "../../components/Loading/Loading";
+import { useSelector } from "react-redux";
 
 function ProjectInvoices() {
+  const userState = useSelector((state) => state.user);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [invoices, setInvoices] = useState([]);
@@ -109,7 +111,7 @@ function ProjectInvoices() {
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            Authorization: `Bearer ${userState.userInfo.accessToken}`,
           },
         }
       );

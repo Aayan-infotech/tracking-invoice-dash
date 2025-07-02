@@ -6,10 +6,11 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import axios from "axios";
 import { images, links } from "../../contstants";
-import { useDispatch } from "react-redux";
+import { useDispatch , useSelector } from "react-redux";
 import { userActions } from "../../store/reducers/userReducers";
 export default function Topbar() {
   const dispatch = useDispatch();
+  const userState = useSelector((state) => state.user);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const handleClose = () => setShowChangePasswordModal(false);
@@ -23,12 +24,11 @@ export default function Topbar() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const name = localStorage.getItem("username") || "Admin";
-    const avatar =
-      localStorage.getItem("profileImage") || images.placeholder;
-    const email = localStorage.getItem("email") || "Not provided";
-    const mobile = localStorage.getItem("mobile") || "Not provided";
-    const username = localStorage.getItem("username") || "Not provided";
+    const name = userState.userInfo.user.name || "Admin";
+    const avatar = userState.userInfo.user.profile_image || images.placeholder;
+    const email = userState.userInfo.user.email || "Not provided";
+    const mobile = userState.userInfo.user.mobile || "Not provided";
+    const username = userState.userInfo.user.username || "Not provided";
     setUser({ name, avatar, email, mobile, username });
   }, []);
 
@@ -78,7 +78,7 @@ export default function Topbar() {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            Authorization: `Bearer ${userState.userInfo.accessToken}`,
           },
         }
       );

@@ -6,8 +6,10 @@ import { toast } from "react-toastify";
 import { images, links } from "../../contstants";
 import Pagination from "../../components/Pagination";
 import Loading from "../../components/Loading/Loading";
+import { useSelector } from "react-redux";
 
 const Users = () => {
+  const userState = useSelector((state) => state.user);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -117,7 +119,7 @@ const Users = () => {
       await axios
         .put(`${links.BASE_URL}users/update-user-detail/${userId}`, formData, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            Authorization: `Bearer ${userState.userInfo.accessToken}`,
             "Content-Type": "multipart/form-data",
           },
         })
