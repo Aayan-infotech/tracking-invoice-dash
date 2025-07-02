@@ -3,10 +3,11 @@ import Sidebar from "../../components/Sidebar/Sidebar";
 import Topbar from "../../components/Topbar/Topbar";
 import "./Projects.css";
 import axios from "axios";
-import { fetchWithAuth } from "../../api/authFetch";
+import { fetchWithAuth } from "../../utils/authFetch";
 import Button from "react-bootstrap/Button";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import Pagination from "../../components/Pagination";
 import { links } from "../../contstants";
 
 function Projects() {
@@ -31,16 +32,13 @@ function Projects() {
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      const response = await fetchWithAuth(
-        `${links.BASE_URL}projects`,
-        {
-          method: "GET",
-          params: {
-            page: pagination.current_page,
-            limit: pagination.per_page,
-          },
-        }
-      );
+      const response = await fetchWithAuth(`${links.BASE_URL}projects`, {
+        method: "GET",
+        params: {
+          page: pagination.current_page,
+          limit: pagination.per_page,
+        },
+      });
 
       setProjects(
         response?.data?.data?.projects ? response.data.data.projects : []
@@ -248,410 +246,316 @@ function Projects() {
     });
   };
 
-  if (loading) {
-    return (
-      <div className="d-flex">
-        <Sidebar />
-        <div className="flex-grow-1 bg-light">
-          <Topbar />
-          <div className="p-4 text-center">
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="d-flex">
-        <Sidebar />
-        <div className="flex-grow-1 bg-light">
-          <Topbar />
-          <div className="p-4 text-center text-danger">Error: {error}</div>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="d-flex">
-      <Sidebar />
-      <div className="flex-grow-1 bg-light">
-        <Topbar />
-        <div className="p-4">
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <h3 className="fw-bold text-dark">Project Management</h3>
-            <Button
-              title="Add Project"
-              onClick={handleAddProject}
-              variant="primary"
-            >
-              Add Project
-            </Button>
-          </div>
+    <div>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h3 className="fw-bold text-dark">Project Management</h3>
+        <Button
+          title="Add Project"
+          onClick={handleAddProject}
+          variant="primary"
+        >
+          Add Project
+        </Button>
+      </div>
 
-          <div className="table-responsive">
-            <table className="table table-bordered align-middle text-center table-striped">
-              <thead className="table-dark">
-                <tr>
-                  <th>Project Name</th>
-                  <th>Start Date</th>
-                  <th>End Date</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {projects.length > 0 ? (
-                  projects.map((project, idx) => (
-                    <tr key={project._id}>
-                      <td>{project.projectName}</td>
-                      <td>
-                        {project.startDate
-                          ? new Date(project.startDate).toLocaleDateString(
-                              "en-US",
-                              {
-                                month: "2-digit",
-                                day: "2-digit",
-                                year: "numeric",
-                              }
-                            )
-                          : "N/A"}
-                      </td>
-                      <td>
-                        {project.endDate
-                          ? new Date(project.endDate).toLocaleDateString(
-                              "en-US",
-                              {
-                                month: "2-digit",
-                                day: "2-digit",
-                                year: "numeric",
-                              }
-                            )
-                          : "N/A"}
-                      </td>
-                      <td>
-                        {/* 'active', 'completed', 'on hold', 'cancelled */}
-                        {project.status === "active" ? (
-                          <span className="badge bg-success">Active</span>
-                        ) : project.status === "completed" ? (
-                          <span className="badge bg-primary">Completed</span>
-                        ) : project.status === "on hold" ? (
-                          <span className="badge bg-warning">On Hold</span>
-                        ) : (
-                          <span className="badge bg-danger">Cancelled</span>
-                        )}
-                      </td>
-                      <td>
-                        <i
-                          className="bi bi-eye text-primary fs-5 me-3"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => handleView(idx)}
-                          title="View Project"
-                        ></i>
-                        <i
-                          className="bi bi-pencil text-warning fs-5"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => handleEdit(idx)}
-                          title="Edit Project"
-                        ></i>
-                        {/* <i
+      <div className="table-responsive">
+        <table className="table table-bordered align-middle text-center table-striped">
+          <thead className="table-dark">
+            <tr>
+              <th>Project Name</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {projects.length > 0 ? (
+              projects.map((project, idx) => (
+                <tr key={project._id}>
+                  <td>{project.projectName}</td>
+                  <td>
+                    {project.startDate
+                      ? new Date(project.startDate).toLocaleDateString(
+                          "en-US",
+                          {
+                            month: "2-digit",
+                            day: "2-digit",
+                            year: "numeric",
+                          }
+                        )
+                      : "N/A"}
+                  </td>
+                  <td>
+                    {project.endDate
+                      ? new Date(project.endDate).toLocaleDateString("en-US", {
+                          month: "2-digit",
+                          day: "2-digit",
+                          year: "numeric",
+                        })
+                      : "N/A"}
+                  </td>
+                  <td>
+                    {/* 'active', 'completed', 'on hold', 'cancelled */}
+                    {project.status === "active" ? (
+                      <span className="badge bg-success">Active</span>
+                    ) : project.status === "completed" ? (
+                      <span className="badge bg-primary">Completed</span>
+                    ) : project.status === "on hold" ? (
+                      <span className="badge bg-warning">On Hold</span>
+                    ) : (
+                      <span className="badge bg-danger">Cancelled</span>
+                    )}
+                  </td>
+                  <td>
+                    <i
+                      className="bi bi-eye text-primary fs-5 me-3"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handleView(idx)}
+                      title="View Project"
+                    ></i>
+                    <i
+                      className="bi bi-pencil text-warning fs-5"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handleEdit(idx)}
+                      title="Edit Project"
+                    ></i>
+                    {/* <i
                           className="bi bi-trash text-danger fs-5 ms-3"
                           style={{ cursor: "pointer" }}
                           onClick={() => handleDelete(project._id)}
                           title="Delete Project"
                         ></i> */}
-                      </td>
-                    </tr>
-                  ))
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="text-center">
+                  No projects found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <Pagination
+        onPageChange={(page) =>
+          setPagination((prev) => ({ ...prev, current_page: page }))
+        }
+        currentPage={pagination.current_page}
+        totalPageCount={pagination.total_page}
+      />
+
+      {/* Modal */}
+      {modalType && (
+        <div
+          className="modal show fade d-block"
+          tabIndex="-1"
+          role="dialog"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
+          <div
+            className="modal-dialog modal-dialog-centered modal-lg"
+            role="document"
+          >
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">
+                  {modalType === "add"
+                    ? "Add Project"
+                    : modalType === "view"
+                    ? "View Project"
+                    : "Edit Project"}
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={handleCloseModal}
+                ></button>
+              </div>
+              <div className="modal-body">
+                {modalType === "add" ? (
+                  <div className="row">
+                    <div className="col-md-12">
+                      <div className="mb-3">
+                        <label className="form-label">Project Name</label>
+                        <input
+                          type="text"
+                          name="projectName"
+                          className="form-control"
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label">Start Date</label>
+                        <input
+                          type="date"
+                          name="startDate"
+                          className="form-control"
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label">End Date</label>
+                        <input
+                          type="date"
+                          name="endDate"
+                          className="form-control"
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label">
+                          Project Description
+                        </label>
+                        <textarea
+                          name="description"
+                          className="form-control"
+                          onChange={handleChange}
+                        ></textarea>
+                      </div>
+                    </div>
+                  </div>
+                ) : modalType === "view" ? (
+                  <div className="row">
+                    <div className="col-md-12">
+                      <div className="mb-3 d-flex">
+                        <div className="fw-semibold w-25">📌 Project Name:</div>
+                        <div className="text-muted">
+                          {projectData.projectName || "N/A"}
+                        </div>
+                      </div>
+
+                      <div className="mb-3 d-flex">
+                        <div className="fw-semibold w-25">📅 Start Date:</div>
+                        <div className="text-muted">
+                          {projectData.startDate
+                            ? new Date(
+                                projectData.startDate
+                              ).toLocaleDateString("en-GB")
+                            : "N/A"}
+                        </div>
+                      </div>
+
+                      <div className="mb-3 d-flex">
+                        <div className="fw-semibold w-25">📅 End Date:</div>
+                        <div className="text-muted">
+                          {projectData.endDate
+                            ? new Date(projectData.endDate).toLocaleDateString(
+                                "en-GB"
+                              )
+                            : "N/A"}
+                        </div>
+                      </div>
+
+                      <div className="mb-3 d-flex">
+                        <div className="fw-semibold w-25">📝 Description:</div>
+                        <div className="text-muted">
+                          {projectData.description || "N/A"}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 ) : (
-                  <tr>
-                    <td colSpan="5" className="text-center">
-                      No projects found
-                    </td>
-                  </tr>
+                  <form>
+                    <div className="row">
+                      <div className="col-md-12">
+                        <div className="mb-3">
+                          <label className="form-label">Project Name</label>
+                          <input
+                            type="text"
+                            name="projectName"
+                            className="form-control"
+                            value={projectData.projectName}
+                            onChange={handleChange}
+                          />
+                        </div>
+                        <div className="mb-3">
+                          <label className="form-label">Start Date</label>
+                          <input
+                            type="date"
+                            name="startDate"
+                            className="form-control"
+                            value={projectData.startDate}
+                            onChange={handleChange}
+                          />
+                        </div>
+                        <div className="mb-3">
+                          <label className="form-label">End Date</label>
+                          <input
+                            type="date"
+                            name="endDate"
+                            className="form-control"
+                            value={projectData.endDate}
+                            onChange={handleChange}
+                          />
+                        </div>
+                        <div className="mb-3">
+                          <label className="form-label">
+                            Project Description
+                          </label>
+                          <textarea
+                            name="description"
+                            className="form-control"
+                            onChange={handleChange}
+                            value={projectData.description}
+                          ></textarea>
+                        </div>
+                        <div className="mb-3">
+                          <label className="form-label">Project Status</label>
+                          <select
+                            name="status"
+                            className="form-select"
+                            value={projectData.status}
+                            onChange={handleChange}
+                          >
+                            <option value="active">Active</option>
+                            <option value="completed">Completed</option>
+                            <option value="on hold">On Hold</option>
+                            <option value="cancelled">Cancelled</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
                 )}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination */}
-          {pagination.total_page > 1 && (
-            <nav aria-label="Page navigation">
-              <ul className="pagination justify-content-center">
-                <li
-                  className={`page-item ${
-                    pagination.current_page === 1 ? "disabled" : ""
-                  }`}
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={handleCloseModal}
                 >
-                  <button
-                    className="page-link"
-                    onClick={() =>
-                      handlePageChange(pagination.current_page - 1)
-                    }
+                  Close
+                </button>
+                {modalType === "add" ? (
+                  <Button
+                    variant="primary"
+                    onClick={saveProjectDetails}
+                    disabled={disabled}
                   >
-                    Previous
-                  </button>
-                </li>
-
-                {Array.from(
-                  { length: pagination.total_page },
-                  (_, i) => i + 1
-                ).map((page) => (
-                  <li
-                    key={page}
-                    className={`page-item ${
-                      page === pagination.current_page ? "active" : ""
-                    }`}
-                  >
-                    <button
-                      className="page-link"
-                      onClick={() => handlePageChange(page)}
+                    Save Project
+                  </Button>
+                ) : (
+                  modalType === "edit" && (
+                    <Button
+                      variant="primary"
+                      onClick={updateProjectDetails}
+                      disabled={disabled}
                     >
-                      {page}
-                    </button>
-                  </li>
-                ))}
-
-                <li
-                  className={`page-item ${
-                    pagination.current_page === pagination.total_page
-                      ? "disabled"
-                      : ""
-                  }`}
-                >
-                  <button
-                    className="page-link"
-                    onClick={() =>
-                      handlePageChange(pagination.current_page + 1)
-                    }
-                  >
-                    Next
-                  </button>
-                </li>
-              </ul>
-            </nav>
-          )}
-
-          {/* Modal */}
-          {modalType && (
-            <div
-              className="modal show fade d-block"
-              tabIndex="-1"
-              role="dialog"
-              style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-            >
-              <div
-                className="modal-dialog modal-dialog-centered modal-lg"
-                role="document"
-              >
-                <div className="modal-content">
-                  <div className="modal-header">
-                    <h5 className="modal-title">
-                      {modalType === "add"
-                        ? "Add Project"
-                        : modalType === "view"
-                        ? "View Project"
-                        : "Edit Project"}
-                    </h5>
-                    <button
-                      type="button"
-                      className="btn-close"
-                      onClick={handleCloseModal}
-                    ></button>
-                  </div>
-                  <div className="modal-body">
-                    {modalType === "add" ? (
-                      <div className="row">
-                        <div className="col-md-12">
-                          <div className="mb-3">
-                            <label className="form-label">Project Name</label>
-                            <input
-                              type="text"
-                              name="projectName"
-                              className="form-control"
-                              onChange={handleChange}
-                            />
-                          </div>
-                          <div className="mb-3">
-                            <label className="form-label">Start Date</label>
-                            <input
-                              type="date"
-                              name="startDate"
-                              className="form-control"
-                              onChange={handleChange}
-                            />
-                          </div>
-                          <div className="mb-3">
-                            <label className="form-label">End Date</label>
-                            <input
-                              type="date"
-                              name="endDate"
-                              className="form-control"
-                              onChange={handleChange}
-                            />
-                          </div>
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Project Description
-                            </label>
-                            <textarea
-                              name="description"
-                              className="form-control"
-                              onChange={handleChange}
-                            ></textarea>
-                          </div>
-                        </div>
-                      </div>
-                    ) : modalType === "view" ? (
-                      <div className="row">
-                        <div className="col-md-12">
-                          <div className="mb-3 d-flex">
-                            <div className="fw-semibold w-25">
-                              📌 Project Name:
-                            </div>
-                            <div className="text-muted">
-                              {projectData.projectName || "N/A"}
-                            </div>
-                          </div>
-
-                          <div className="mb-3 d-flex">
-                            <div className="fw-semibold w-25">
-                              📅 Start Date:
-                            </div>
-                            <div className="text-muted">
-                              {projectData.startDate
-                                ? new Date(
-                                    projectData.startDate
-                                  ).toLocaleDateString("en-GB")
-                                : "N/A"}
-                            </div>
-                          </div>
-
-                          <div className="mb-3 d-flex">
-                            <div className="fw-semibold w-25">📅 End Date:</div>
-                            <div className="text-muted">
-                              {projectData.endDate
-                                ? new Date(
-                                    projectData.endDate
-                                  ).toLocaleDateString("en-GB")
-                                : "N/A"}
-                            </div>
-                          </div>
-
-                          <div className="mb-3 d-flex">
-                            <div className="fw-semibold w-25">
-                              📝 Description:
-                            </div>
-                            <div className="text-muted">
-                              {projectData.description || "N/A"}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <form>
-                        <div className="row">
-                          <div className="col-md-12">
-                            <div className="mb-3">
-                              <label className="form-label">Project Name</label>
-                              <input
-                                type="text"
-                                name="projectName"
-                                className="form-control"
-                                value={projectData.projectName}
-                                onChange={handleChange}
-                              />
-                            </div>
-                            <div className="mb-3">
-                              <label className="form-label">Start Date</label>
-                              <input
-                                type="date"
-                                name="startDate"
-                                className="form-control"
-                                value={projectData.startDate}
-                                onChange={handleChange}
-                              />
-                            </div>
-                            <div className="mb-3">
-                              <label className="form-label">End Date</label>
-                              <input
-                                type="date"
-                                name="endDate"
-                                className="form-control"
-                                value={projectData.endDate}
-                                onChange={handleChange}
-                              />
-                            </div>
-                            <div className="mb-3">
-                              <label className="form-label">
-                                Project Description
-                              </label>
-                              <textarea
-                                name="description"
-                                className="form-control"
-                                onChange={handleChange}
-                                value={projectData.description}
-                              ></textarea>
-                            </div>
-                            <div className="mb-3">
-                              <label className="form-label">
-                                Project Status
-                              </label>
-                              <select
-                                name="status"
-                                className="form-select"
-                                value={projectData.status}
-                                onChange={handleChange}
-                              >
-                                <option value="active">Active</option>
-                                <option value="completed">Completed</option>
-                                <option value="on hold">On Hold</option>
-                                <option value="cancelled">Cancelled</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                      </form>
-                    )}
-                  </div>
-                  <div className="modal-footer">
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      onClick={handleCloseModal}
-                    >
-                      Close
-                    </button>
-                    {modalType === "add" ? (
-                      <Button
-                        variant="primary"
-                        onClick={saveProjectDetails}
-                        disabled={disabled}
-                      >
-                        Save Project
-                      </Button>
-                    ) : (
-                      modalType === "edit" && (
-                        <Button
-                          variant="primary"
-                          onClick={updateProjectDetails}
-                          disabled={disabled}
-                        >
-                          Update Project
-                        </Button>
-                      )
-                    )}
-                  </div>
-                </div>
+                      Update Project
+                    </Button>
+                  )
+                )}
               </div>
             </div>
-          )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

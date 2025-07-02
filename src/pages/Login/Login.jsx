@@ -1,76 +1,65 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
 import "./Login.css";
-import axios from "axios";
-import { links } from "../../contstants";
+import { login } from "../../services/index/users";
+import { userActions } from "../../store/reducers/userReducers";
+import { useDispatch, useSelector } from "react-redux";
 
 const LoginPage = () => {
-  const [form, setForm] = useState({ username: "", password: "" });
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const userState = useSelector((state) => state.user);
 
-  const handleChange = (e) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
+  const { mutate, isLoading } = useMutation({
+    mutationFn: ({ username, password }) => {
+      return login({ username, password });
+    },
+    onSuccess: (data) => {
+      const response = data.data;
+      dispatch(userActions.setUserInfo(response));
+      localStorage.setItem("account", JSON.stringify(response));
+    },
+    onError: (error) => {
+      toast.error(error.message);
+      console.log(error);
+    },
+  });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    if (!form.username || !form.password) {
-      toast.error("Please fill in all fields");
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const response = await axios.post(
-        `${links.BASE_URL}auth/login`,
-        form,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      const result = await response.data;
-
-      if (response.status === 200) {
-        // Save user data to localStorage
-        const { user, accessToken, refreshToken } = result.data;
-
-        localStorage.setItem("authToken", accessToken);
-        localStorage.setItem("refreshToken", refreshToken);
-        localStorage.setItem("userId", user.userId);
-        localStorage.setItem("username", user.username);
-        localStorage.setItem("name", user.name);
-        localStorage.setItem("userRole", user.role || "user"); 
-        localStorage.setItem("profileImage", user.profile_image || "");
-        localStorage.setItem("email", user.email || "");
-        localStorage.setItem("mobile", user.mobile || "");
-
-        // Check user role and redirect accordingly
-        if (user.role === "admin") {
-          toast.success("Admin login successful!");
-          setTimeout(() => {
-            navigate("/dashboard");
-          }, 1500);
-        } else {
-          // Clear sensitive data if not admin
-          localStorage.removeItem("authToken");
-          localStorage.removeItem("refreshToken");
-          toast.error("You are not authorized to access this system");
-        }
+  useEffect(() => {
+    if (userState.userInfo) {
+      if (userState.userInfo.user.role === "admin") {
+        toast.success("Login successful!");
+        navigate("/admin/dashboard");
       } else {
-        toast.error(result.message || "Invalid credentials");
+        toast.error("You are not authorized to access this page.");
+        navigate("/");
+        localStorage.removeItem("account");
+        dispatch(userActions.setUserInfo(null));
       }
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Login failed. Please try again.");
-    } finally {
-      setLoading(false);
     }
+  }, [navigate, userState.userInfo]);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm({
+    defaultValues: {
+      username: "",
+      password: "",
+    },
+    mode: "onChange",
+    reValidateMode: "onChange",
+  });
+
+  const submitHandler = (data) => {
+    console.log("Form is valid:", isValid);
+    const { username, password } = data;
+    console.log("Submitting login:", { username, password });
+    mutate({ username, password });
   };
 
   return (
@@ -80,38 +69,60 @@ const LoginPage = () => {
         style={{ width: "100%", maxWidth: "400px" }}
       >
         <h3 className="text-center mb-4 text-primary">🔐 Admin Login</h3>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(submitHandler)}>
           <div className="mb-3">
-            <label className="form-label fw-semibold">Username</label>
+            <label htmlFor="username" className="form-label fw-semibold">
+              Username
+            </label>
             <input
               type="text"
-              className="form-control"
+              className={`form-control ${errors.username ? "is-invalid" : ""}`}
               placeholder="Enter username"
-              name="username"
-              value={form.username}
-              onChange={handleChange}
-              required
+              id="username"
+              {...register("username", {
+                required: {
+                  value: true,
+                  message: "Username is required",
+                },
+              })}
             />
+            {errors.username && (
+              <div className="invalid-feedback">{errors.username.message}</div>
+            )}
           </div>
+
           <div className="mb-3">
-            <label className="form-label fw-semibold">Password</label>
+            <label htmlFor="password" className="form-label fw-semibold">
+              Password
+            </label>
             <input
               type="password"
-              className="form-control"
+              id="password"
+              className={`form-control ${errors.password ? "is-invalid" : ""}`}
               placeholder="Enter password"
-              name="password"
-              value={form.password}
-              onChange={handleChange}
-              required
+              {...register("password", {
+                required: {
+                  value: true,
+                  message: "Password is required",
+                },
+                minLength: {
+                  value: 6,
+                  message: "Password length must be at least 6 characters",
+                },
+              })}
             />
+            {errors.password && (
+              <div className="invalid-feedback">{errors.password.message}</div>
+            )}
           </div>
+
           <div className="d-grid">
             <button
               type="submit"
               className="btn btn-primary fw-semibold"
-              disabled={loading}
+              disabled={isLoading}
             >
-              {loading ? (
+              {isLoading ? (
                 <>
                   <span
                     className="spinner-border spinner-border-sm me-2"

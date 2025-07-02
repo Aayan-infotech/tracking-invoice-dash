@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Topbar from "../../components/Topbar/Topbar";
-import { fetchWithAuth } from "../../api/authFetch";
+import { fetchWithAuth } from "../../utils/authFetch";
 import { toast } from "react-toastify";
+import Pagination from "../../components/Pagination";
 import Button from "react-bootstrap/Button";
 import axios from "axios";
+
 import { links } from "../../contstants";
 
 function ProjectInvoices() {
@@ -134,242 +136,157 @@ function ProjectInvoices() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="d-flex">
-        <Sidebar />
-        <div className="flex-grow-1 bg-light">
-          <Topbar />
-          <div className="p-4 text-center">
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="d-flex">
-        <Sidebar />
-        <div className="flex-grow-1 bg-light">
-          <Topbar />
-          <div className="p-4 text-center text-danger">Error: {error}</div>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="d-flex">
-      <Sidebar />
-      <div className="flex-grow-1 bg-light">
-        <Topbar />
-        <div className="p-4">
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <h3 className="fw-bold text-dark">Invoice Management</h3>
-            {/* <Button
+    <>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h3 className="fw-bold text-dark">Invoice Management</h3>
+        {/* <Button
               title="Add Project"
               onClick={handleAddProject}
               variant="primary"
             >
               Add Project
             </Button> */}
-          </div>
+      </div>
 
-          <div className="table-responsive">
-            <table className="table table-bordered align-middle text-center table-striped">
-              <thead className="table-dark">
-                <tr>
-                  <th>Project Name</th>
-                  <th>Invoice Number</th>
-                  <th>Invoice</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {invoices.length > 0 ? (
-                  invoices.map((invoice, idx) => (
-                    <tr key={invoice._id}>
-                      <td>{invoice.projectName}</td>
-                      <td>{invoice.invoiceNumber}</td>
-                      <td>
-                        <a
-                          href={invoice.invoiceUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          View Invoice
-                        </a>
-                      </td>
-                      <td>
-                        {invoice.status === "paid" ? (
-                          <span className="badge bg-success">Paid</span>
-                        ) : invoice.status === "unpaid" ? (
-                          <span className="badge bg-danger">Unpaid</span>
-                        ) : invoice.status === "draft" ? (
-                          <span className="badge bg-warning">Draft</span>
-                        ) : (
-                          <span className="badge bg-secondary">Pending</span>
-                        )}
-                      </td>
-                      <td>
-                        <i
-                          className="bi bi-pencil text-warning fs-5"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => handleEdit(idx)}
-                          title="Edit Invoice"
-                        ></i>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="5" className="text-center">
-                      No invoices found
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination */}
-          {pagination.total_page > 1 && (
-            <nav aria-label="Page navigation">
-              <ul className="pagination justify-content-center">
-                <li
-                  className={`page-item ${
-                    pagination.current_page === 1 ? "disabled" : ""
-                  }`}
-                >
-                  <button
-                    className="page-link"
-                    onClick={() =>
-                      handlePageChange(pagination.current_page - 1)
-                    }
-                  >
-                    Previous
-                  </button>
-                </li>
-
-                {Array.from(
-                  { length: pagination.total_page },
-                  (_, i) => i + 1
-                ).map((page) => (
-                  <li
-                    key={page}
-                    className={`page-item ${
-                      page === pagination.current_page ? "active" : ""
-                    }`}
-                  >
-                    <button
-                      className="page-link"
-                      onClick={() => handlePageChange(page)}
+      <div className="table-responsive">
+        <table className="table table-bordered align-middle text-center table-striped">
+          <thead className="table-dark">
+            <tr>
+              <th>Project Name</th>
+              <th>Invoice Number</th>
+              <th>Invoice</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {invoices.length > 0 ? (
+              invoices.map((invoice, idx) => (
+                <tr key={invoice._id}>
+                  <td>{invoice.projectName}</td>
+                  <td>{invoice.invoiceNumber}</td>
+                  <td>
+                    <a
+                      href={invoice.invoiceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
                     >
-                      {page}
-                    </button>
-                  </li>
-                ))}
-
-                <li
-                  className={`page-item ${
-                    pagination.current_page === pagination.total_page
-                      ? "disabled"
-                      : ""
-                  }`}
-                >
-                  <button
-                    className="page-link"
-                    onClick={() =>
-                      handlePageChange(pagination.current_page + 1)
-                    }
-                  >
-                    Next
-                  </button>
-                </li>
-              </ul>
-            </nav>
-          )}
-
-          {modalType && (
-            <div
-              className="modal show fade d-block"
-              tabIndex="-1"
-              role="dialog"
-              style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-            >
-              <div
-                className="modal-dialog modal-dialog-centered modal-lg"
-                role="document"
-              >
-                <div className="modal-content">
-                  <div className="modal-header">
-                    <h5 className="modal-title">
-                      {modalType === "edit" ? "Update Invoice Status" : ""}
-                    </h5>
-                    <button
-                      type="button"
-                      className="btn-close"
-                      onClick={handleCloseModal}
-                    ></button>
-                  </div>
-                  <div className="modal-body">
-                    {modalType === "edit" ? (
-                      // Edit Mode
-                      <div className="row">
-                        <div className="col-md-12">
-                          <div className="mb-3">
-                            <label htmlFor="InvoiceStatus">
-                              Invoice Status
-                            </label>
-                            <select
-                              className="form-select"
-                              id="InvoiceStatus"
-                              name="status"
-                              value={formData.status}
-                              onChange={handleChange}
-                            >
-                              <option value="">Select Status</option>
-                              <option value="paid">Paid</option>
-                              <option value="unpaid">Unpaid</option>
-                              <option value="draft">Draft</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
+                      View Invoice
+                    </a>
+                  </td>
+                  <td>
+                    {invoice.status === "paid" ? (
+                      <span className="badge bg-success">Paid</span>
+                    ) : invoice.status === "unpaid" ? (
+                      <span className="badge bg-danger">Unpaid</span>
+                    ) : invoice.status === "draft" ? (
+                      <span className="badge bg-warning">Draft</span>
                     ) : (
-                      ""
+                      <span className="badge bg-secondary">Pending</span>
                     )}
+                  </td>
+                  <td>
+                    <i
+                      className="bi bi-pencil text-warning fs-5"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handleEdit(idx)}
+                      title="Edit Invoice"
+                    ></i>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="text-center">
+                  No invoices found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <Pagination
+        onPageChange={(page) =>
+          setPagination((prev) => ({ ...prev, current_page: page }))
+        }
+        currentPage={pagination.current_page}
+        totalPageCount={pagination.total_page}
+      />
+
+      {modalType && (
+        <div
+          className="modal show fade d-block"
+          tabIndex="-1"
+          role="dialog"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
+          <div
+            className="modal-dialog modal-dialog-centered modal-lg"
+            role="document"
+          >
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">
+                  {modalType === "edit" ? "Update Invoice Status" : ""}
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={handleCloseModal}
+                ></button>
+              </div>
+              <div className="modal-body">
+                {modalType === "edit" ? (
+                  // Edit Mode
+                  <div className="row">
+                    <div className="col-md-12">
+                      <div className="mb-3">
+                        <label htmlFor="InvoiceStatus">Invoice Status</label>
+                        <select
+                          className="form-select"
+                          id="InvoiceStatus"
+                          name="status"
+                          value={formData.status}
+                          onChange={handleChange}
+                        >
+                          <option value="">Select Status</option>
+                          <option value="paid">Paid</option>
+                          <option value="unpaid">Unpaid</option>
+                          <option value="draft">Draft</option>
+                        </select>
+                      </div>
+                    </div>
                   </div>
-                  <div className="modal-footer">
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      onClick={handleCloseModal}
-                    >
-                      Close
-                    </button>
-                    {modalType === "edit" ? (
-                      <Button
-                        variant="primary"
-                        onClick={updateInvoiceStatus}
-                        disabled={disabled}
-                      >
-                        {disabled ? "Updating..." : "Update"}
-                      </Button>
-                    ) : null}
-                  </div>
-                </div>
+                ) : (
+                  ""
+                )}
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={handleCloseModal}
+                >
+                  Close
+                </button>
+                {modalType === "edit" ? (
+                  <Button
+                    variant="primary"
+                    onClick={updateInvoiceStatus}
+                    disabled={disabled}
+                  >
+                    {disabled ? "Updating..." : "Update"}
+                  </Button>
+                ) : null}
               </div>
             </div>
-          )}
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }
 

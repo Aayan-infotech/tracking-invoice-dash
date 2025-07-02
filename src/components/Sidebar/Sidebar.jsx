@@ -13,27 +13,27 @@ export default function Sidebar() {
   // const [openDocumentType, setOpenDocumentType] = useState(false);
 
   useEffect(() => {
-    if (pathname.startsWith("/users")) {
+    if (pathname.startsWith("/admin/users")) {
       setOpenUsers(true);
     }
-    if (pathname.startsWith("/tasks")) {
+    if (pathname.startsWith("/admin/tasks")) {
       setOpenTasks(true);
     }
     // if (pathname.startsWith("/document-types")) {
     //   setOpenDocumentType(true);
     // }
     if (
-      pathname.startsWith("/projects") ||
-      pathname.startsWith("/projectTasks") ||
-      pathname.startsWith("/assign-tasks") ||
-      pathname.startsWith("/quality-assurance") ||
-      pathname.startsWith("/invoices")
+      pathname.startsWith("/admin/projects") ||
+      pathname.startsWith("/admin/projectTasks") ||
+      pathname.startsWith("/admin/assign-tasks") ||
+      pathname.startsWith("/admin/quality-assurance") ||
+      pathname.startsWith("/admin/invoices")
     ) {
       setOpenProjects(true);
     }
     if (
-      pathname.startsWith("/pages") ||
-      pathname.startsWith("/terms-of-service")
+      pathname.startsWith("/admin/pages") ||
+      pathname.startsWith("/admin/terms-of-service")
     ) {
       setOpenPages(true);
     }
@@ -47,7 +47,7 @@ export default function Sidebar() {
 
       <ul className="sidebar-nav">
         <li className="sidebar-item">
-          <Link to="/dashboard" className="sidebar-link-dash">
+          <Link to="/admin/dashboard" className="sidebar-link-dash">
             <i className="bi bi-speedometer2 me-2"></i> Dashboard
           </Link>
         </li>
@@ -71,9 +71,9 @@ export default function Sidebar() {
             <ul className="sidebar-submenu">
               <li>
                 <Link
-                  to="/users"
+                  to="/admin/users"
                   className={`sidebar-sublink ${
-                    pathname === "/users" ? "active" : ""
+                    pathname === "/admin/users" ? "active" : ""
                   }`}
                 >
                   All Users
@@ -102,9 +102,9 @@ export default function Sidebar() {
             <ul className="sidebar-submenu">
               <li>
                 <Link
-                  to="/tasks"
+                  to="/admin/tasks"
                   className={`sidebar-sublink ${
-                    pathname === "/tasks" ? "active" : ""
+                    pathname === "/admin/tasks" ? "active" : ""
                   }`}
                 >
                   All Tasks
@@ -113,36 +113,6 @@ export default function Sidebar() {
             </ul>
           )}
         </li>
-
-        {/* <li className="sidebar-item">
-          <div
-            className="sidebar-link"
-            onClick={() => setOpenDocumentType(!openDocumentType)}
-          >
-            <span>
-              <i className="bi bi-people-fill me-2"></i>Document Type
-            </span>
-            <i
-              className={`bi ${
-                openDocumentType ? "bi-chevron-up" : "bi-chevron-down"
-              }`}
-            ></i>
-          </div>
-          {openDocumentType && (
-            <ul className="sidebar-submenu">
-              <li>
-                <Link
-                  to="/document-types"
-                  className={`sidebar-sublink ${
-                    pathname === "/document-types" ? "active" : ""
-                  }`}
-                >
-                  All Document Types
-                </Link>
-              </li>
-            </ul>
-          )}
-        </li> */}
 
         {/* Project Management */}
         <li className="sidebar-item">
@@ -163,9 +133,9 @@ export default function Sidebar() {
             <ul className="sidebar-submenu">
               <li>
                 <Link
-                  to="/projects"
+                  to="/admin/projects"
                   className={`sidebar-sublink ${
-                    pathname === "/projects" ? "active" : ""
+                    pathname === "/admin/projects" ? "active" : ""
                   }`}
                 >
                   All Projects
@@ -173,9 +143,9 @@ export default function Sidebar() {
               </li>
               <li>
                 <Link
-                  to="/projectTasks"
+                  to="/admin/projectTasks"
                   className={`sidebar-sublink ${
-                    pathname === "/projectTasks" ? "active" : ""
+                    pathname === "/admin/projectTasks" ? "active" : ""
                   }`}
                 >
                   Project Tasks
@@ -183,9 +153,9 @@ export default function Sidebar() {
               </li>
               <li>
                 <Link
-                  to="/assign-tasks"
+                  to="/admin/assign-tasks"
                   className={`sidebar-sublink ${
-                    pathname === "/assign-tasks" ? "active" : ""
+                    pathname === "/admin/assign-tasks" ? "active" : ""
                   }`}
                 >
                   Assign Tasks
@@ -193,9 +163,9 @@ export default function Sidebar() {
               </li>
               <li>
                 <Link
-                  to="/quality-assurance"
+                  to="/admin/quality-assurance"
                   className={`sidebar-sublink ${
-                    pathname === "/quality-assurance" ? "active" : ""
+                    pathname === "/admin/quality-assurance" ? "active" : ""
                   }`}
                 >
                   Quality Assurance
@@ -203,9 +173,9 @@ export default function Sidebar() {
               </li>
               <li>
                 <Link
-                  to="/invoices"
+                  to="/admin/invoices"
                   className={`sidebar-sublink ${
-                    pathname === "/invoices" ? "active" : ""
+                    pathname === "/admin/invoices" ? "active" : ""
                   }`}
                 >
                   Project Invoices
@@ -233,9 +203,9 @@ export default function Sidebar() {
             <ul className="sidebar-submenu">
               <li>
                 <Link
-                  to="/pages"
+                  to="/admin/pages"
                   className={`sidebar-sublink ${
-                    pathname === "/pages" ? "active" : ""
+                    pathname === "/admin/pages" ? "active" : ""
                   }`}
                 >
                   Pages

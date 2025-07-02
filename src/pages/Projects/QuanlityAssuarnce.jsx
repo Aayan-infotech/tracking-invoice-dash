@@ -3,11 +3,11 @@ import Sidebar from "../../components/Sidebar/Sidebar";
 import Topbar from "../../components/Topbar/Topbar";
 import "./Projects.css";
 import axios from "axios";
-import { fetchWithAuth } from "../../api/authFetch";
+import { fetchWithAuth } from "../../utils/authFetch";
 import Button from "react-bootstrap/Button";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
-import Editor from "../../components/TextEditor/TextEditor";
+import Pagination from "../../components/Pagination";
 import { links } from "../../contstants";
 
 function QualityAssurance() {
@@ -294,304 +294,212 @@ function QualityAssurance() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="d-flex">
-        <Sidebar />
-        <div className="flex-grow-1 bg-light">
-          <Topbar />
-          <div className="p-4 text-center">
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
-  if (error) {
-    return (
-      <div className="d-flex">
-        <Sidebar />
-        <div className="flex-grow-1 bg-light">
-          <Topbar />
-          <div className="p-4 text-center text-danger">Error: {error}</div>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="d-flex">
-      <Sidebar />
-      <div className="flex-grow-1 bg-light">
-        <Topbar />
-        <div className="p-4">
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <h3 className="fw-bold text-dark">Quality Assurance</h3>
-            <Button
-              title="Add Document"
-              onClick={handleAddDoc}
-              variant="primary"
-            >
-              Add Doc
-            </Button>
-          </div>
+    <>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h3 className="fw-bold text-dark">Quality Assurance</h3>
+        <Button title="Add Document" onClick={handleAddDoc} variant="primary">
+          Add Doc
+        </Button>
+      </div>
 
-          <div className="table-responsive">
-            <table className="table table-bordered align-middle text-center table-striped">
-              <thead className="table-dark">
-                <tr>
-                  <th>Project Name</th>
-                  <th>Document Name</th>
-                  <th>Document File</th>
-                  <th>Status</th>
-                  <th>Actions</th>
+      <div className="table-responsive">
+        <table className="table table-bordered align-middle text-center table-striped">
+          <thead className="table-dark">
+            <tr>
+              <th>Project Name</th>
+              <th>Document Name</th>
+              <th>Document File</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {document.length > 0 ? (
+              document.map((doc, idx) => (
+                <tr key={doc._id}>
+                  <td>{doc.projectName || "N/A"}</td>
+                  <td>{doc.documentName || "N/A"}</td>
+                  <td>
+                    {doc.documentFile ? (
+                      <a
+                        href={`${doc.documentFile}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        View Document
+                      </a>
+                    ) : (
+                      "No Document"
+                    )}
+                  </td>
+                  <td>
+                    {doc.status ? (
+                      <span className="badge bg-success">Active</span>
+                    ) : (
+                      <span className="badge bg-warning">Pending</span>
+                    )}
+                  </td>
+                  <td>
+                    <i
+                      className="bi bi-eye text-primary fs-5 me-3"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handleView(idx)}
+                      title="View Document"
+                    ></i>
+                    <i
+                      className="bi bi-pencil text-warning fs-5"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handleEdit(idx)}
+                      title="Edit Document"
+                    ></i>
+                    <i
+                      className="bi bi-trash text-danger fs-5 ms-3"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handleDelete(doc._id)}
+                      title="Delete Document"
+                    ></i>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {document.length > 0 ? (
-                  document.map((doc, idx) => (
-                    <tr key={doc._id}>
-                      <td>{doc.projectName || "N/A"}</td>
-                      <td>{doc.documentName || "N/A"}</td>
-                      <td>
-                        {doc.documentFile ? (
-                          <a
-                            href={`${doc.documentFile}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            View Document
-                          </a>
-                        ) : (
-                          "No Document"
-                        )}
-                      </td>
-                      <td>
-                        {doc.status ? (
-                          <span className="badge bg-success">Active</span>
-                        ) : (
-                          <span className="badge bg-warning">Pending</span>
-                        )}
-                      </td>
-                      <td>
-                        <i
-                          className="bi bi-eye text-primary fs-5 me-3"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => handleView(idx)}
-                          title="View Document"
-                        ></i>
-                        <i
-                          className="bi bi-pencil text-warning fs-5"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => handleEdit(idx)}
-                          title="Edit Document"
-                        ></i>
-                        <i
-                          className="bi bi-trash text-danger fs-5 ms-3"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => handleDelete(doc._id)}
-                          title="Delete Document"
-                        ></i>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="4" className="text-center">
-                      No documents found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" className="text-center">
+                  No documents found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
-          {/* Pagination */}
-          {pagination.total_page > 1 && (
-            <nav aria-label="Page navigation">
-              <ul className="pagination justify-content-center">
-                <li
-                  className={`page-item ${
-                    pagination.current_page === 1 ? "disabled" : ""
-                  }`}
-                >
-                  <button
-                    className="page-link"
-                    onClick={() =>
-                      handlePageChange(pagination.current_page - 1)
-                    }
-                  >
-                    Previous
-                  </button>
-                </li>
-
-                {Array.from(
-                  { length: pagination.total_page },
-                  (_, i) => i + 1
-                ).map((page) => (
-                  <li
-                    key={page}
-                    className={`page-item ${
-                      page === pagination.current_page ? "active" : ""
-                    }`}
-                  >
-                    <button
-                      className="page-link"
-                      onClick={() => handlePageChange(page)}
-                    >
-                      {page}
-                    </button>
-                  </li>
-                ))}
-
-                <li
-                  className={`page-item ${
-                    pagination.current_page === pagination.total_page
-                      ? "disabled"
-                      : ""
-                  }`}
-                >
-                  <button
-                    className="page-link"
-                    onClick={() =>
-                      handlePageChange(pagination.current_page + 1)
-                    }
-                  >
-                    Next
-                  </button>
-                </li>
-              </ul>
-            </nav>
-          )}
-
-          {/* Modal */}
-          {modalType && (
-            <div
-              className="modal show fade d-block"
-              tabIndex="-1"
-              role="dialog"
-              style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-            >
-              <div
-                className="modal-dialog modal-dialog-centered modal-lg"
-                role="document"
-              >
-                <div className="modal-content">
-                  <div className="modal-header">
-                    <h5 className="modal-title">
-                      {modalType === "add"
-                        ? "Add Quality Assurance Document"
-                        : modalType === "view"
-                        ? "View Quality Assurance Document"
-                        : "Edit Quality Assurance Document"}
-                    </h5>
-                    <button
-                      type="button"
-                      className="btn-close"
-                      onClick={handleCloseModal}
-                    ></button>
+      <Pagination
+        onPageChange={(page) =>
+          setPagination((prev) => ({ ...prev, current_page: page }))
+        }
+        currentPage={pagination.current_page}
+        totalPageCount={pagination.total_page}
+      />
+      {/* Modal */}
+      {modalType && (
+        <div
+          className="modal show fade d-block"
+          tabIndex="-1"
+          role="dialog"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
+          <div
+            className="modal-dialog modal-dialog-centered modal-lg"
+            role="document"
+          >
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">
+                  {modalType === "add"
+                    ? "Add Quality Assurance Document"
+                    : modalType === "view"
+                    ? "View Quality Assurance Document"
+                    : "Edit Quality Assurance Document"}
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={handleCloseModal}
+                ></button>
+              </div>
+              <div className="modal-body">
+                {modalType === "add" ? (
+                  <div className="row">
+                    <div className="col-md-12">
+                      <div className="mb-3">
+                        <label htmlFor="Project" className="form-label">
+                          Select Project *
+                        </label>
+                        <select
+                          name="projectId"
+                          className="form-select form-control"
+                          id="Project"
+                          value={formData.projectId}
+                          onChange={handleChange}
+                        >
+                          <option value="">Select Project</option>
+                          {projects.length > 0 &&
+                            projects.map((project) => (
+                              <option
+                                value={project._id}
+                                className="dropdown-projects"
+                                key={project._id}
+                              >
+                                {project.projectName}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+                      <div className="mb-3">
+                        <label htmlFor="documentName" className="form-label">
+                          Select Document Type *
+                        </label>
+                        <select
+                          name="documentTypeId"
+                          className="form-select form-control"
+                          id="documentTypeId"
+                          value={formData.documentTypeId}
+                          onChange={handleChange}
+                        >
+                          <option value="">Select Document Type</option>
+                          {documentTypes.length > 0 &&
+                            documentTypes.map((docType) => (
+                              <option value={docType._id} key={docType._id}>
+                                {docType.name}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+                      <div className="mb-3">
+                        <label htmlFor="formFile" className="form-label">
+                          Upload Document *
+                        </label>
+                        <input
+                          className="form-control"
+                          type="file"
+                          accept="application/pdf"
+                          id="formFile"
+                          name="documentFile"
+                          onChange={handleFileChange}
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <div className="modal-body">
-                    {modalType === "add" ? (
-                      <div className="row">
-                        <div className="col-md-12">
-                          <div className="mb-3">
-                            <label htmlFor="Project" className="form-label">
-                              Select Project *
-                            </label>
-                            <select
-                              name="projectId"
-                              className="form-select form-control"
-                              id="Project"
-                              value={formData.projectId}
-                              onChange={handleChange}
-                            >
-                              <option value="">Select Project</option>
-                              {projects.length > 0 &&
-                                projects.map((project) => (
-                                  <option
-                                    value={project._id}
-                                    className="dropdown-projects"
-                                    key={project._id}
-                                  >
-                                    {project.projectName}
-                                  </option>
-                                ))}
-                            </select>
-                          </div>
-                          <div className="mb-3">
-                            <label
-                              htmlFor="documentName"
-                              className="form-label"
-                            >
-                              Select Document Type *
-                            </label>
-                            <select
-                              name="documentTypeId"
-                              className="form-select form-control"
-                              id="documentTypeId"
-                              value={formData.documentTypeId}
-                              onChange={handleChange}
-                            >
-                              <option value="">Select Document Type</option>
-                              {documentTypes.length > 0 &&
-                                documentTypes.map((docType) => (
-                                  <option value={docType._id} key={docType._id}>
-                                    {docType.name}
-                                  </option>
-                                ))}
-                            </select>
-                          </div>
-                          <div className="mb-3">
-                            <label htmlFor="formFile" className="form-label">
-                              Upload Document *
-                            </label>
-                            <input
-                              className="form-control"
-                              type="file"
-                              accept="application/pdf"
-                              id="formFile"
-                              name="documentFile"
-                              onChange={handleFileChange}
-                            />
-                          </div>
+                ) : modalType === "view" ? (
+                  <div className="row">
+                    <div className="col-md-12">
+                      <div className="mb-3 d-flex">
+                        <div className="fw-semibold w-25">📌 Project Name:</div>
+                        <div className="text-muted">
+                          {formData?.projectName || "N/A"}
                         </div>
                       </div>
-                    ) : modalType === "view" ? (
-                      <div className="row">
-                        <div className="col-md-12">
-                          <div className="mb-3 d-flex">
-                            <div className="fw-semibold w-25">
-                              📌 Project Name:
-                            </div>
-                            <div className="text-muted">
-                              {formData?.projectName || "N/A"}
-                            </div>
-                          </div>
-                          <div className="mb-3 d-flex">
-                            <div className="fw-semibold w-25">
-                              📝 Document Name:
-                            </div>
-                            <div className="text-muted">
-                              {formData?.documentName || "N/A"}
-                            </div>
-                          </div>
-                          <div className="mb-3 d-flex">
-                            <div className="fw-semibold w-25">📊 Status:</div>
-                            <div className="text-muted">
-                              {formData?.status ? (
-                                <span className="badge bg-success">Active</span>
-                              ) : (
-                                <span className="badge bg-warning">
-                                  Pending
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                          {/* <div className="mb-3">
+                      <div className="mb-3 d-flex">
+                        <div className="fw-semibold w-25">
+                          📝 Document Name:
+                        </div>
+                        <div className="text-muted">
+                          {formData?.documentName || "N/A"}
+                        </div>
+                      </div>
+                      <div className="mb-3 d-flex">
+                        <div className="fw-semibold w-25">📊 Status:</div>
+                        <div className="text-muted">
+                          {formData?.status ? (
+                            <span className="badge bg-success">Active</span>
+                          ) : (
+                            <span className="badge bg-warning">Pending</span>
+                          )}
+                        </div>
+                      </div>
+                      {/* <div className="mb-3">
                             <div className="fw-semibold mb-2">
                               📄 Description:
                             </div>
@@ -605,83 +513,77 @@ function QualityAssurance() {
                               }}
                             />
                           </div> */}
-                          <div className="mb-3 d-flex">
-                            <div className="fw-semibold w-25">
-                              📂 Document File:
-                            </div>
-                            <div className="text-muted">
-                              {formData?.documentFile ? (
-                                <a
-                                  href={`${formData.documentFile}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                >
-                                  View Document
-                                </a>
-                              ) : (
-                                "No Document"
-                              )}
-                            </div>
-                          </div>
+                      <div className="mb-3 d-flex">
+                        <div className="fw-semibold w-25">
+                          📂 Document File:
+                        </div>
+                        <div className="text-muted">
+                          {formData?.documentFile ? (
+                            <a
+                              href={`${formData.documentFile}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              View Document
+                            </a>
+                          ) : (
+                            "No Document"
+                          )}
                         </div>
                       </div>
-                    ) : (
-                      // Edit Mode
-                      <div className="row">
-                        <div className="col-md-12">
-                          <div className="mb-3">
-                            <label htmlFor="Project" className="form-label">
-                              Select Project *
-                            </label>
-                            <select
-                              name="projectId"
-                              className="form-select form-control"
-                              id="Project"
-                              value={formData.projectId}
-                              onChange={handleChange}
-                            >
-                              <option value="">Select Project</option>
-                              {projects.length > 0 &&
-                                projects.map((project) => (
-                                  <option
-                                    value={project._id}
-                                    className="dropdown-projects"
-                                    key={project._id}
-                                  >
-                                    {project.projectName}
-                                  </option>
-                                ))}
-                            </select>
-                          </div>
+                    </div>
+                  </div>
+                ) : (
+                  // Edit Mode
+                  <div className="row">
+                    <div className="col-md-12">
+                      <div className="mb-3">
+                        <label htmlFor="Project" className="form-label">
+                          Select Project *
+                        </label>
+                        <select
+                          name="projectId"
+                          className="form-select form-control"
+                          id="Project"
+                          value={formData.projectId}
+                          onChange={handleChange}
+                        >
+                          <option value="">Select Project</option>
+                          {projects.length > 0 &&
+                            projects.map((project) => (
+                              <option
+                                value={project._id}
+                                className="dropdown-projects"
+                                key={project._id}
+                              >
+                                {project.projectName}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
 
-                          <div className="mb-3">
-                            <label
-                              htmlFor="documentName"
-                              className="form-label"
-                            >
-                              Select Document Type *
-                            </label>
-                            <select
-                              name="documentTypeId"
-                              className="form-select form-control"
-                              id="documentTypeId"
-                              value={formData.documentTypeId}
-                              onChange={handleChange}
-                            >
-                              <option value="">Select Document Type</option>
-                              {documentTypes.length > 0 &&
-                                documentTypes.map((docType) => (
-                                  <option
-                                    value={docType._id}
-                                    key={docType._id}
-                                  >
-                                    {docType.name}
-                                  </option>
-                                ))}
-                            </select>
-                          </div>
+                      <div className="mb-3">
+                        <label htmlFor="documentName" className="form-label">
+                          Select Document Type *
+                        </label>
+                        <select
+                          name="documentTypeId"
+                          className="form-select form-control"
+                          id="documentTypeId"
+                          value={formData.documentTypeId}
+                          onChange={handleChange}
+                        >
+                          <option value="">Select Document Type</option>
+                          {documentTypes.length > 0 &&
+                            documentTypes.map((docType) => (
+                              <option value={docType._id} key={docType._id}>
+                                {docType.name}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
 
-                          {/* <div className="mb-3">
+                      {/* <div className="mb-3">
                             <label
                               htmlFor="documentDescription"
                               className="form-label"
@@ -697,56 +599,54 @@ function QualityAssurance() {
                               />
                             </div>
                           </div> */}
-                          <div className="mb-3">
-                            <label htmlFor="formFile" className="form-label">
-                              Upload Document *
-                            </label>
-                            <input
-                              className="form-control"
-                              type="file"
-                              accept="application/pdf"
-                              id="formFile"
-                              name="documentFile"
-                              onChange={handleFileChange}
-                            />
-                          </div>
-                        </div>
+                      <div className="mb-3">
+                        <label htmlFor="formFile" className="form-label">
+                          Upload Document *
+                        </label>
+                        <input
+                          className="form-control"
+                          type="file"
+                          accept="application/pdf"
+                          id="formFile"
+                          name="documentFile"
+                          onChange={handleFileChange}
+                        />
                       </div>
-                    )}
+                    </div>
                   </div>
-                  <div className="modal-footer">
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      onClick={handleCloseModal}
-                    >
-                      Close
-                    </button>
-                    {modalType === "add" ? (
-                      <Button
-                        variant="primary"
-                        onClick={saveDocument}
-                        disabled={disabled}
-                      >
-                        {disabled ? "Saving..." : "Save"}
-                      </Button>
-                    ) : modalType === "edit" ? (
-                      <Button
-                        variant="primary"
-                        onClick={updateDocument}
-                        disabled={disabled}
-                      >
-                        {disabled ? "Updating..." : "Update"}
-                      </Button>
-                    ) : null}
-                  </div>
-                </div>
+                )}
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={handleCloseModal}
+                >
+                  Close
+                </button>
+                {modalType === "add" ? (
+                  <Button
+                    variant="primary"
+                    onClick={saveDocument}
+                    disabled={disabled}
+                  >
+                    {disabled ? "Saving..." : "Save"}
+                  </Button>
+                ) : modalType === "edit" ? (
+                  <Button
+                    variant="primary"
+                    onClick={updateDocument}
+                    disabled={disabled}
+                  >
+                    {disabled ? "Updating..." : "Update"}
+                  </Button>
+                ) : null}
               </div>
             </div>
-          )}
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }
 

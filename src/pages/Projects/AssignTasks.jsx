@@ -3,10 +3,11 @@ import Sidebar from "../../components/Sidebar/Sidebar";
 import Topbar from "../../components/Topbar/Topbar";
 import "./Projects.css";
 import axios from "axios";
-import { fetchWithAuth } from "../../api/authFetch";
+import { fetchWithAuth } from "../../utils/authFetch";
 import Button from "react-bootstrap/Button";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import Pagination from "../../components/Pagination";
 import { links } from "../../contstants";
 
 function AssignTasks() {
@@ -129,13 +130,13 @@ function AssignTasks() {
   const handleCloseModal = () => {
     setModalType(null);
     setFormData({
-        id: "",
-        projectId: "",
-        taskId: "",
-        userId: "",
-        taskName: "",
-        taskAmount: "",
-        description: "",
+      id: "",
+      projectId: "",
+      taskId: "",
+      userId: "",
+      taskName: "",
+      taskAmount: "",
+      description: "",
     });
   };
 
@@ -231,9 +232,7 @@ function AssignTasks() {
     try {
       setDisabled(true);
       const result = await axios.put(
-        `${links.BASE_URL}projects/assign-tasks/${
-          formData.id
-        }`,
+        `${links.BASE_URL}projects/assign-tasks/${formData.id}`,
         {
           projectId: formData.projectId,
           userId: formData.userId,
@@ -283,7 +282,9 @@ function AssignTasks() {
             }
           );
           toast.success("Task deleted successfully");
-          setAssignedTasks((prev) => prev.filter((task) => task._id !== assignedTaskId));
+          setAssignedTasks((prev) =>
+            prev.filter((task) => task._id !== assignedTaskId)
+          );
         } catch (err) {
           toast.error(err.response?.data?.message || "Failed to delete task");
           setLoading(false);
@@ -292,411 +293,321 @@ function AssignTasks() {
     });
   };
 
-  if (loading) {
-    return (
-      <div className="d-flex">
-        <Sidebar />
-        <div className="flex-grow-1 bg-light">
-          <Topbar />
-          <div className="p-4 text-center">
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
-  if (error) {
-    return (
-      <div className="d-flex">
-        <Sidebar />
-        <div className="flex-grow-1 bg-light">
-          <Topbar />
-          <div className="p-4 text-center text-danger">Error: {error}</div>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="d-flex">
-      <Sidebar />
-      <div className="flex-grow-1 bg-light">
-        <Topbar />
-        <div className="p-4">
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <h3 className="fw-bold text-dark">Assign Tasks</h3>
-            <Button
-              title="Assign Task"
-              onClick={handleAddTask}
-              variant="primary"
-            >
-              Assign Task
-            </Button>
-          </div>
+    <>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h3 className="fw-bold text-dark">Assign Tasks</h3>
+        <Button title="Assign Task" onClick={handleAddTask} variant="primary">
+          Assign Task
+        </Button>
+      </div>
 
-          <div className="table-responsive">
-            <table className="table table-bordered align-middle text-center table-striped">
-              <thead className="table-dark">
-                <tr>
-                  <th>Project Name</th>
-                  <th>Task Name</th>
-                  <th>Assign User</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {assignedTasks.length > 0 ? (
-                  assignedTasks.map((task, idx) => (
-                    <tr key={task._id}>
-                      <td>{task.projectName || "N/A"}</td>
-                      <td>{task.taskName || "N/A"}</td>
-                      <td>{task.username || "N/A"}</td>
-                      <td>
-                        <i
-                          className="bi bi-eye text-primary fs-5 me-3"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => handleView(idx)}
-                          title="View Task"
-                        ></i>
-                        <i
-                          className="bi bi-pencil text-warning fs-5"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => handleEdit(idx)}
-                          title="Edit Task"
-                        ></i>
-                        {/* <i
+      <div className="table-responsive">
+        <table className="table table-bordered align-middle text-center table-striped">
+          <thead className="table-dark">
+            <tr>
+              <th>Project Name</th>
+              <th>Task Name</th>
+              <th>Assign User</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {assignedTasks.length > 0 ? (
+              assignedTasks.map((task, idx) => (
+                <tr key={task._id}>
+                  <td>{task.projectName || "N/A"}</td>
+                  <td>{task.taskName || "N/A"}</td>
+                  <td>{task.username || "N/A"}</td>
+                  <td>
+                    <i
+                      className="bi bi-eye text-primary fs-5 me-3"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handleView(idx)}
+                      title="View Task"
+                    ></i>
+                    <i
+                      className="bi bi-pencil text-warning fs-5"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handleEdit(idx)}
+                      title="Edit Task"
+                    ></i>
+                    {/* <i
                           className="bi bi-trash text-danger fs-5 ms-3"
                           style={{ cursor: "pointer" }}
                           onClick={() => handleDelete(task._id)}
                           title="Delete Task"
                         ></i> */}
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="4" className="text-center">
-                      No assigned tasks found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" className="text-center">
+                  No assigned tasks found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
-          {/* Pagination */}
-          {pagination.total_page > 1 && (
-            <nav aria-label="Page navigation">
-              <ul className="pagination justify-content-center">
-                <li
-                  className={`page-item ${
-                    pagination.current_page === 1 ? "disabled" : ""
-                  }`}
-                >
-                  <button
-                    className="page-link"
-                    onClick={() =>
-                      handlePageChange(pagination.current_page - 1)
-                    }
-                  >
-                    Previous
-                  </button>
-                </li>
+      <Pagination
+        onPageChange={(page) =>
+          setPagination((prev) => ({ ...prev, current_page: page }))
+        }
+        currentPage={pagination.current_page}
+        totalPageCount={pagination.total_page}
+      />
 
-                {Array.from(
-                  { length: pagination.total_page },
-                  (_, i) => i + 1
-                ).map((page) => (
-                  <li
-                    key={page}
-                    className={`page-item ${
-                      page === pagination.current_page ? "active" : ""
-                    }`}
-                  >
-                    <button
-                      className="page-link"
-                      onClick={() => handlePageChange(page)}
-                    >
-                      {page}
-                    </button>
-                  </li>
-                ))}
-
-                <li
-                  className={`page-item ${
-                    pagination.current_page === pagination.total_page
-                      ? "disabled"
-                      : ""
-                  }`}
-                >
-                  <button
-                    className="page-link"
-                    onClick={() =>
-                      handlePageChange(pagination.current_page + 1)
-                    }
-                  >
-                    Next
-                  </button>
-                </li>
-              </ul>
-            </nav>
-          )}
-
-          {/* Modal */}
-          {modalType && (
-            <div
-              className="modal show fade d-block"
-              tabIndex="-1"
-              role="dialog"
-              style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-            >
-              <div
-                className="modal-dialog modal-dialog-centered modal-lg"
-                role="document"
-              >
-                <div className="modal-content">
-                  <div className="modal-header">
-                    <h5 className="modal-title">
-                      {modalType === "add"
-                        ? "Assign Task"
-                        : modalType === "view"
-                        ? "View Assign Task"
-                        : "Edit Assign Task"}
-                    </h5>
-                    <button
-                      type="button"
-                      className="btn-close"
-                      onClick={handleCloseModal}
-                    ></button>
-                  </div>
-                  <div className="modal-body">
-                    {modalType === "add" ? (
-                      <div className="row">
-                        <div className="col-md-12">
-                          <div className="mb-3">
-                            <label htmlFor="Project" className="form-label">
-                              Select Project
-                            </label>
-                            <select
-                              name="projectId"
-                              className="form-select form-control"
-                              id="Project"
-                              onChange={handleChange}
-                            >
-                              <option value="">Select Project</option>
-                              {projects.length > 0 &&
-                                projects.map((project) => (
-                                  <option
-                                    value={project._id}
-                                    className="dropdown-projects"
-                                    key={project._id}
-                                  >
-                                    {project.projectName}
-                                  </option>
-                                ))}
-                            </select>
-                          </div>
-
-                          <div className="mb-3">
-                            <label htmlFor="Task" className="form-label">
-                              Select Task
-                            </label>
-                            <select
-                              name="taskId"
-                              className="form-select form-control"
-                              id="Task"
-                              onChange={handleChange}
-                            >
-                              <option value="">Select Task</option>
-                              {tasks.length > 0 &&
-                                tasks.map((task) => (
-                                  <option
-                                    value={task._id}
-                                    className="dropdown-tasks"
-                                    key={task._id}
-                                  >
-                                    {task.taskName}
-                                  </option>
-                                ))}
-                            </select>
-                          </div>
-
-                          <div className="mb-3">
-                            <label htmlFor="User" className="form-label">
-                              Select User
-                            </label>
-                            <select
-                              name="userId"
-                              className="form-select form-control"
-                              id="User"
-                              onChange={handleChange}
-                            >
-                              <option value="">Select User</option>
-                              {users.length > 0 &&
-                                users.map((user) => (
-                                  <option
-                                    value={user.userId}
-                                    className="dropdown-users"
-                                    key={user.userId}
-                                  >
-                                    {`${user.username} (${
-                                      user.name ? user.name : "-"
-                                    })`}
-                                  </option>
-                                ))}
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                    ) : modalType === "view" ? (
-                      <div className="row">
-                        <div className="col-md-12">
-                          <div className="mb-3 d-flex">
-                            <div className="fw-semibold w-25">
-                              📌 Project Name:
-                            </div>
-                            <div className="text-muted">
-                              {formData?.projectName || "N/A"}
-                            </div>
-                          </div>
-                          <div className="mb-3 d-flex">
-                            <div className="fw-semibold w-25">
-                              📝 Task Name:
-                            </div>
-                            <div className="text-muted">
-                              {formData?.taskName || "N/A"}
-                            </div>
-                          </div>
-                          <div className="mb-3 d-flex">
-                            <div className="fw-semibold w-25">👤 Username:</div>
-                            <div className="text-muted">
-                              {formData?.username || "N/A"}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <form>
-                        <div className="row">
-                          <div className="col-md-12">
-                            <div className="mb-3">
-                              <label htmlFor="Project" className="form-label">
-                                Select Project
-                              </label>
-                              <select
-                                name="projectId"
-                                className="form-select form-control"
-                                id="Project"
-                                value={formData.projectId}
-                                onChange={handleChange}
-                              >
-                                <option value="">Select Project</option>
-                                {projects.length > 0 &&
-                                  projects.map((project) => (
-                                    <option
-                                      value={project._id}
-                                      className="dropdown-projects"
-                                      key={project._id}
-                                    >
-                                      {project.projectName}
-                                    </option>
-                                  ))}
-                              </select>
-                            </div>
-                            <div className="mb-3">
-                              <label htmlFor="Task" className="form-label">
-                                Select Task
-                              </label>
-                              <select
-                                name="taskId"
-                                className="form-select form-control"
-                                id="Task"
-                                value={formData.taskId}
-                                onChange={handleChange}
-                              >
-                                <option value="">Select Task</option>
-                                {tasks.length > 0 &&
-                                  tasks.map((task) => (
-                                    <option
-                                      value={task._id}
-                                      className="dropdown-tasks"
-                                      key={task._id}
-                                    >
-                                      {task.taskName}
-                                    </option>
-                                  ))}
-                              </select>
-                            </div>
-
-                            <div className="mb-3">
-                              <label htmlFor="User" className="form-label">
-                                Select User
-                              </label>
-                              <select
-                                name="userId"
-                                className="form-select form-control"
-                                id="User"
-                                value={formData.userId}
-                                onChange={handleChange}
-                              >
-                                <option value="">Select User</option>
-                                {users.length > 0 &&
-                                  users.map((user) => (
-                                    <option
-                                      value={user.userId}
-                                      className="dropdown-users"
-                                      key={user.userId}
-                                    >
-                                      {`${user.username} (${
-                                        user.name ? user.name : "-"
-                                      })`}
-                                    </option>
-                                  ))}
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                      </form>
-                    )}
-                  </div>
-                  <div className="modal-footer">
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      onClick={handleCloseModal}
-                    >
-                      Close
-                    </button>
-                    {modalType === "add" ? (
-                      <Button
-                        variant="primary"
-                        onClick={saveAssignTask}
-                        disabled={disabled}
-                      >
-                        Save
-                      </Button>
-                    ) : (
-                      modalType === "edit" && (
-                        <Button
-                          variant="primary"
-                          onClick={updateTaskDetails}
-                          disabled={disabled}
+      {/* Modal */}
+      {modalType && (
+        <div
+          className="modal show fade d-block"
+          tabIndex="-1"
+          role="dialog"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
+          <div
+            className="modal-dialog modal-dialog-centered modal-lg"
+            role="document"
+          >
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">
+                  {modalType === "add"
+                    ? "Assign Task"
+                    : modalType === "view"
+                    ? "View Assign Task"
+                    : "Edit Assign Task"}
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={handleCloseModal}
+                ></button>
+              </div>
+              <div className="modal-body">
+                {modalType === "add" ? (
+                  <div className="row">
+                    <div className="col-md-12">
+                      <div className="mb-3">
+                        <label htmlFor="Project" className="form-label">
+                          Select Project
+                        </label>
+                        <select
+                          name="projectId"
+                          className="form-select form-control"
+                          id="Project"
+                          onChange={handleChange}
                         >
-                          Update
-                        </Button>
-                      )
-                    )}
+                          <option value="">Select Project</option>
+                          {projects.length > 0 &&
+                            projects.map((project) => (
+                              <option
+                                value={project._id}
+                                className="dropdown-projects"
+                                key={project._id}
+                              >
+                                {project.projectName}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+
+                      <div className="mb-3">
+                        <label htmlFor="Task" className="form-label">
+                          Select Task
+                        </label>
+                        <select
+                          name="taskId"
+                          className="form-select form-control"
+                          id="Task"
+                          onChange={handleChange}
+                        >
+                          <option value="">Select Task</option>
+                          {tasks.length > 0 &&
+                            tasks.map((task) => (
+                              <option
+                                value={task._id}
+                                className="dropdown-tasks"
+                                key={task._id}
+                              >
+                                {task.taskName}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+
+                      <div className="mb-3">
+                        <label htmlFor="User" className="form-label">
+                          Select User
+                        </label>
+                        <select
+                          name="userId"
+                          className="form-select form-control"
+                          id="User"
+                          onChange={handleChange}
+                        >
+                          <option value="">Select User</option>
+                          {users.length > 0 &&
+                            users.map((user) => (
+                              <option
+                                value={user.userId}
+                                className="dropdown-users"
+                                key={user.userId}
+                              >
+                                {`${user.username} (${
+                                  user.name ? user.name : "-"
+                                })`}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                ) : modalType === "view" ? (
+                  <div className="row">
+                    <div className="col-md-12">
+                      <div className="mb-3 d-flex">
+                        <div className="fw-semibold w-25">📌 Project Name:</div>
+                        <div className="text-muted">
+                          {formData?.projectName || "N/A"}
+                        </div>
+                      </div>
+                      <div className="mb-3 d-flex">
+                        <div className="fw-semibold w-25">📝 Task Name:</div>
+                        <div className="text-muted">
+                          {formData?.taskName || "N/A"}
+                        </div>
+                      </div>
+                      <div className="mb-3 d-flex">
+                        <div className="fw-semibold w-25">👤 Username:</div>
+                        <div className="text-muted">
+                          {formData?.username || "N/A"}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <form>
+                    <div className="row">
+                      <div className="col-md-12">
+                        <div className="mb-3">
+                          <label htmlFor="Project" className="form-label">
+                            Select Project
+                          </label>
+                          <select
+                            name="projectId"
+                            className="form-select form-control"
+                            id="Project"
+                            value={formData.projectId}
+                            onChange={handleChange}
+                          >
+                            <option value="">Select Project</option>
+                            {projects.length > 0 &&
+                              projects.map((project) => (
+                                <option
+                                  value={project._id}
+                                  className="dropdown-projects"
+                                  key={project._id}
+                                >
+                                  {project.projectName}
+                                </option>
+                              ))}
+                          </select>
+                        </div>
+                        <div className="mb-3">
+                          <label htmlFor="Task" className="form-label">
+                            Select Task
+                          </label>
+                          <select
+                            name="taskId"
+                            className="form-select form-control"
+                            id="Task"
+                            value={formData.taskId}
+                            onChange={handleChange}
+                          >
+                            <option value="">Select Task</option>
+                            {tasks.length > 0 &&
+                              tasks.map((task) => (
+                                <option
+                                  value={task._id}
+                                  className="dropdown-tasks"
+                                  key={task._id}
+                                >
+                                  {task.taskName}
+                                </option>
+                              ))}
+                          </select>
+                        </div>
+
+                        <div className="mb-3">
+                          <label htmlFor="User" className="form-label">
+                            Select User
+                          </label>
+                          <select
+                            name="userId"
+                            className="form-select form-control"
+                            id="User"
+                            value={formData.userId}
+                            onChange={handleChange}
+                          >
+                            <option value="">Select User</option>
+                            {users.length > 0 &&
+                              users.map((user) => (
+                                <option
+                                  value={user.userId}
+                                  className="dropdown-users"
+                                  key={user.userId}
+                                >
+                                  {`${user.username} (${
+                                    user.name ? user.name : "-"
+                                  })`}
+                                </option>
+                              ))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                )}
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={handleCloseModal}
+                >
+                  Close
+                </button>
+                {modalType === "add" ? (
+                  <Button
+                    variant="primary"
+                    onClick={saveAssignTask}
+                    disabled={disabled}
+                  >
+                    Save
+                  </Button>
+                ) : (
+                  modalType === "edit" && (
+                    <Button
+                      variant="primary"
+                      onClick={updateTaskDetails}
+                      disabled={disabled}
+                    >
+                      Update
+                    </Button>
+                  )
+                )}
               </div>
             </div>
-          )}
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }
 

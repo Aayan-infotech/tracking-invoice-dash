@@ -1,9 +1,12 @@
 // src/api/authAxios.js
 import axios from "axios";
-import { refreshAccessToken } from "./refreshToken";
+import { refreshAccessToken } from "../services/index/users";
+
 
 export const fetchWithAuth = async (url, options = {}) => {
-  const token = localStorage.getItem("authToken");
+  const account = localStorage.getItem("account");
+  const token = account ? JSON.parse(account).accessToken : null;
+  console.log(token);
 
   try {
     const response = await axios({
@@ -31,7 +34,7 @@ export const fetchWithAuth = async (url, options = {}) => {
           });
           return retryResponse;
         } catch (error) {
-          window.location.href = "/login";
+          console.error("Retry request failed:", error);
         }
       }
     }

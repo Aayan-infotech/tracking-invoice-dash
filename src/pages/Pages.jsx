@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar/Sidebar";
 import Topbar from "../components/Topbar/Topbar";
 import axios from "axios";
-import { fetchWithAuth } from "../api/authFetch";
+import { fetchWithAuth } from "../utils/authFetch";
 import Button from "react-bootstrap/Button";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
@@ -31,12 +31,9 @@ function Pages() {
   const fetchDocument = async () => {
     try {
       setLoading(true);
-      const response = await fetchWithAuth(
-        `${links.BASE_URL}pages`,
-        {
-          method: "GET",
-        }
-      );
+      const response = await fetchWithAuth(`${links.BASE_URL}pages`, {
+        method: "GET",
+      });
       setDocument(response?.data?.data?.pages ? response.data.data.pages : []);
       setLoading(false);
     } catch (err) {
@@ -45,8 +42,6 @@ function Pages() {
       setError(err.message);
     }
   };
-
-
 
   useEffect(() => {
     fetchDocument();
@@ -67,7 +62,8 @@ function Pages() {
     setFormData({
       pageName: selectedDoc.pageName || "",
       pageURL: selectedDoc.pageURL || selectedDoc.pageUrl || "",
-      pageDescription: selectedDoc.pageDescription || selectedDoc.description || "",
+      pageDescription:
+        selectedDoc.pageDescription || selectedDoc.description || "",
       _id: selectedDoc._id || "",
     });
     setModalType("view");
@@ -138,7 +134,7 @@ function Pages() {
 
     // Handle project selection
     if (name === "projectId") {
-      const selectedProject = projects.find(project => project._id === value);
+      const selectedProject = projects.find((project) => project._id === value);
       setFormData((prev) => ({
         ...prev,
         projectId: value,
@@ -167,24 +163,20 @@ function Pages() {
       }
       return;
     }
-    
+
     setDisabled(true);
     const data = {
       pageName: formData.pageName,
       pageURL: formData.pageURL,
       pageDescription: formData.pageDescription,
     };
-    
+
     try {
-      const response = await axios.post(
-        `${links.BASE_URL}pages`,
-        data,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
-        }
-      );
+      const response = await axios.post(`${links.BASE_URL}pages`, data, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+      });
       toast.success("Page saved successfully");
       fetchDocument();
       handleCloseModal();
@@ -232,372 +224,326 @@ function Pages() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="d-flex">
-        <Sidebar />
-        <div className="flex-grow-1 bg-light">
-          <Topbar />
-          <div className="p-4 text-center">
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="d-flex">
-        <Sidebar />
-        <div className="flex-grow-1 bg-light">
-          <Topbar />
-          <div className="p-4 text-center text-danger">Error: {error}</div>
-        </div>
-      </div>
-    );
-  }
+  
 
   return (
-    <div className="d-flex">
-      <Sidebar />
-      <div className="flex-grow-1 bg-light">
-        <Topbar />
-        <div className="p-4">
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <h3 className="fw-bold text-dark">Pages</h3>
-            <Button title="Add Page" onClick={handleAddPage} variant="primary">
-              Add Page
-            </Button>
-          </div>
+    <>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h3 className="fw-bold text-dark">Pages</h3>
+        <Button title="Add Page" onClick={handleAddPage} variant="primary">
+          Add Page
+        </Button>
+      </div>
 
-          <div className="table-responsive">
-            <table className="table table-bordered align-middle text-center table-striped">
-              <thead className="table-dark">
-                <tr>
-                  <th>Page Name</th>
-                  <th>Page URL</th>
-                  <th>Actions</th>
+      <div className="table-responsive">
+        <table className="table table-bordered align-middle text-center table-striped">
+          <thead className="table-dark">
+            <tr>
+              <th>Page Name</th>
+              <th>Page URL</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {document.length > 0 ? (
+              document.map((page, idx) => (
+                <tr key={page._id}>
+                  <td>{page.pageName || "N/A"}</td>
+                  <td>
+                    <a
+                      href={page.pageURL || page.pageUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-decoration-none"
+                    >
+                      {page.pageURL || page.pageUrl || "N/A"}
+                    </a>
+                  </td>
+
+                  <td>
+                    <i
+                      className="bi bi-eye text-primary fs-5 me-3"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handleView(idx)}
+                      title="View Page"
+                    ></i>
+                    <i
+                      className="bi bi-pencil text-warning fs-5"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handleEdit(idx)}
+                      title="Edit Page"
+                    ></i>
+                    <i
+                      className="bi bi-trash text-danger fs-5 ms-3"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handleDelete(page._id)}
+                      title="Delete Page"
+                    ></i>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {document.length > 0 ? (
-                  document.map((page, idx) => (
-                    <tr key={page._id}>
-                      <td>{page.pageName || "N/A"}</td>
-                      <td>
-                        <a 
-                          href={page.pageURL || page.pageUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-decoration-none"
-                        >
-                          {page.pageURL || page.pageUrl || "N/A"}
-                        </a>
-                      </td>
-                   
-                      <td>
-                        <i
-                          className="bi bi-eye text-primary fs-5 me-3"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => handleView(idx)}
-                          title="View Page"
-                        ></i>
-                        <i
-                          className="bi bi-pencil text-warning fs-5"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => handleEdit(idx)}
-                          title="Edit Page"
-                        ></i>
-                        <i
-                          className="bi bi-trash text-danger fs-5 ms-3"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => handleDelete(page._id)}
-                          title="Delete Page"
-                        ></i>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="5" className="text-center">
-                      No pages found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="text-center">
+                  No pages found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
-          {/* Pagination */}
-          {pagination.total_page > 1 && (
-            <nav aria-label="Page navigation">
-              <ul className="pagination justify-content-center">
-                <li
-                  className={`page-item ${
-                    pagination.current_page === 1 ? "disabled" : ""
-                  }`}
-                >
-                  <button
-                    className="page-link"
-                    onClick={() =>
-                      handlePageChange(pagination.current_page - 1)
-                    }
-                  >
-                    Previous
-                  </button>
-                </li>
-
-                {Array.from(
-                  { length: pagination.total_page },
-                  (_, i) => i + 1
-                ).map((page) => (
-                  <li
-                    key={page}
-                    className={`page-item ${
-                      page === pagination.current_page ? "active" : ""
-                    }`}
-                  >
-                    <button
-                      className="page-link"
-                      onClick={() => handlePageChange(page)}
-                    >
-                      {page}
-                    </button>
-                  </li>
-                ))}
-
-                <li
-                  className={`page-item ${
-                    pagination.current_page === pagination.total_page
-                      ? "disabled"
-                      : ""
-                  }`}
-                >
-                  <button
-                    className="page-link"
-                    onClick={() =>
-                      handlePageChange(pagination.current_page + 1)
-                    }
-                  >
-                    Next
-                  </button>
-                </li>
-              </ul>
-            </nav>
-          )}
-
-          {/* Modal */}
-          {modalType && (
-            <div
-              className="modal show fade d-block"
-              tabIndex="-1"
-              role="dialog"
-              style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+      {/* Pagination */}
+      {pagination.total_page > 1 && (
+        <nav aria-label="Page navigation">
+          <ul className="pagination justify-content-center">
+            <li
+              className={`page-item ${
+                pagination.current_page === 1 ? "disabled" : ""
+              }`}
             >
-              <div
-                className="modal-dialog modal-dialog-centered modal-lg"
-                role="document"
+              <button
+                className="page-link"
+                onClick={() => handlePageChange(pagination.current_page - 1)}
               >
-                <div className="modal-content">
-                  <div className="modal-header">
-                    <h5 className="modal-title">
-                      {modalType === "add"
-                        ? "Add Page"
-                        : modalType === "view"
-                        ? "View Page"
-                        : "Edit Page"}
-                    </h5>
-                    <button
-                      type="button"
-                      className="btn-close"
-                      onClick={handleCloseModal}
-                    ></button>
-                  </div>
-                  <div className="modal-body">
-                    {modalType === "add" ? (
-                      <div className="row">
-                        <div className="col-md-12">
-                          <div className="mb-3">
-                            <label htmlFor="pageName" className="form-label">
-                              Page Name *
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              id="pageName"
-                              name="pageName"
-                              value={formData.pageName}
-                              onChange={handleChange}
-                              placeholder="Enter page name"
-                            />
-                          </div>
-                          <div className="mb-3">
-                            <label htmlFor="pageURL" className="form-label">
-                              Page URL *
-                            </label>
-                            <input
-                              type="url"
-                              className="form-control"
-                              id="pageURL"
-                              name="pageURL"
-                              value={formData.pageURL}
-                              onChange={handleChange}
-                              placeholder="Enter page URL (e.g., https://example.com)"
-                            />
-                          </div>
+                Previous
+              </button>
+            </li>
 
-                          <div className="mb-3">
-                            <label
-                              htmlFor="pageDescription"
-                              className="form-label"
-                            >
-                              Page Description
-                            </label>
-                            <div className="text-editor-container mb-5">
-                              <Editor
-                                name="pageDescription"
-                                value={formData.pageDescription}
-                                onChange={handleChange}
-                                placeholder="Enter page description..."
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ) : modalType === "view" ? (
-                      <div className="row">
-                        <div className="col-md-12">
-                          <div className="mb-3 d-flex">
-                            <div className="fw-semibold w-25">
-                              📌 Page Name:
-                            </div>
-                            <div className="text-muted">
-                              {formData?.pageName || "N/A"}
-                            </div>
-                          </div>
-                          <div className="mb-3 d-flex">
-                            <div className="fw-semibold w-25">
-                              🔗 Page URL:
-                            </div>
-                            <div className="text-muted">
-                              {formData?.pageURL ? (
-                                <a 
-                                  href={formData.pageURL} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer"
-                                  className="text-decoration-none"
-                                >
-                                  {formData.pageURL}
-                                </a>
-                              ) : "N/A"}
-                            </div>
-                          </div>
-                          <div className="mb-3">
-                            <div className="fw-semibold mb-2">
-                              📄 Page Description:
-                            </div>
-                            <div
-                              className="border p-3 rounded bg-light"
-                              style={{ minHeight: "100px" }}
-                              dangerouslySetInnerHTML={{
-                                __html:
-                                  formData?.pageDescription ||
-                                  "No description available",
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      // Edit Mode
-                      <div className="row">
-                        <div className="col-md-12">
-                          <div className="mb-3">
-                            <label htmlFor="pageName" className="form-label">
-                              Page Name *
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              id="pageName"
-                              name="pageName"
-                              value={formData.pageName}
-                              onChange={handleChange}
-                              placeholder="Enter page name"
-                            />
-                          </div>
-                          
-                          <div className="mb-3">
-                            <label htmlFor="pageURL" className="form-label">
-                              Page URL *
-                            </label>
-                            <input
-                              type="url"
-                              className="form-control"
-                              id="pageURL"
-                              name="pageURL"
-                              value={formData.pageURL}
-                              onChange={handleChange}
-                              placeholder="Enter page URL (e.g., https://example.com)"
-                            />
-                          </div>
-                          <div className="mb-3">
-                            <label
-                              htmlFor="pageDescription"
-                              className="form-label"
-                            >
-                              Page Description
-                            </label>
-                            <div className="text-editor-container mb-3">
-                              <Editor
-                                name="pageDescription"
-                                value={formData.pageDescription}
-                                onChange={handleChange}
-                                placeholder="Enter page description..."
-                              />
-                            </div>
-                          </div>
+            {Array.from({ length: pagination.total_page }, (_, i) => i + 1).map(
+              (page) => (
+                <li
+                  key={page}
+                  className={`page-item ${
+                    page === pagination.current_page ? "active" : ""
+                  }`}
+                >
+                  <button
+                    className="page-link"
+                    onClick={() => handlePageChange(page)}
+                  >
+                    {page}
+                  </button>
+                </li>
+              )
+            )}
 
+            <li
+              className={`page-item ${
+                pagination.current_page === pagination.total_page
+                  ? "disabled"
+                  : ""
+              }`}
+            >
+              <button
+                className="page-link"
+                onClick={() => handlePageChange(pagination.current_page + 1)}
+              >
+                Next
+              </button>
+            </li>
+          </ul>
+        </nav>
+      )}
+
+      {/* Modal */}
+      {modalType && (
+        <div
+          className="modal show fade d-block"
+          tabIndex="-1"
+          role="dialog"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
+          <div
+            className="modal-dialog modal-dialog-centered modal-lg"
+            role="document"
+          >
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">
+                  {modalType === "add"
+                    ? "Add Page"
+                    : modalType === "view"
+                    ? "View Page"
+                    : "Edit Page"}
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={handleCloseModal}
+                ></button>
+              </div>
+              <div className="modal-body">
+                {modalType === "add" ? (
+                  <div className="row">
+                    <div className="col-md-12">
+                      <div className="mb-3">
+                        <label htmlFor="pageName" className="form-label">
+                          Page Name *
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="pageName"
+                          name="pageName"
+                          value={formData.pageName}
+                          onChange={handleChange}
+                          placeholder="Enter page name"
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label htmlFor="pageURL" className="form-label">
+                          Page URL *
+                        </label>
+                        <input
+                          type="url"
+                          className="form-control"
+                          id="pageURL"
+                          name="pageURL"
+                          value={formData.pageURL}
+                          onChange={handleChange}
+                          placeholder="Enter page URL (e.g., https://example.com)"
+                        />
+                      </div>
+
+                      <div className="mb-3">
+                        <label htmlFor="pageDescription" className="form-label">
+                          Page Description
+                        </label>
+                        <div className="text-editor-container mb-5">
+                          <Editor
+                            name="pageDescription"
+                            value={formData.pageDescription}
+                            onChange={handleChange}
+                            placeholder="Enter page description..."
+                          />
                         </div>
                       </div>
-                    )}
+                    </div>
                   </div>
-                  <div className="modal-footer">
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      onClick={handleCloseModal}
-                    >
-                      Close
-                    </button>
-                    {modalType === "add" ? (
-                      <Button
-                        variant="primary"
-                        onClick={savePages}
-                        disabled={disabled}
-                      >
-                        {disabled ? "Saving..." : "Save"}
-                      </Button>
-                    ) : modalType === "edit" ? (
-                      <Button
-                        variant="primary"
-                        onClick={updatePage}
-                        disabled={disabled}
-                      >
-                        {disabled ? "Updating..." : "Update"}
-                      </Button>
-                    ) : null}
+                ) : modalType === "view" ? (
+                  <div className="row">
+                    <div className="col-md-12">
+                      <div className="mb-3 d-flex">
+                        <div className="fw-semibold w-25">📌 Page Name:</div>
+                        <div className="text-muted">
+                          {formData?.pageName || "N/A"}
+                        </div>
+                      </div>
+                      <div className="mb-3 d-flex">
+                        <div className="fw-semibold w-25">🔗 Page URL:</div>
+                        <div className="text-muted">
+                          {formData?.pageURL ? (
+                            <a
+                              href={formData.pageURL}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-decoration-none"
+                            >
+                              {formData.pageURL}
+                            </a>
+                          ) : (
+                            "N/A"
+                          )}
+                        </div>
+                      </div>
+                      <div className="mb-3">
+                        <div className="fw-semibold mb-2">
+                          📄 Page Description:
+                        </div>
+                        <div
+                          className="border p-3 rounded bg-light"
+                          style={{ minHeight: "100px" }}
+                          dangerouslySetInnerHTML={{
+                            __html:
+                              formData?.pageDescription ||
+                              "No description available",
+                          }}
+                        />
+                      </div>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  // Edit Mode
+                  <div className="row">
+                    <div className="col-md-12">
+                      <div className="mb-3">
+                        <label htmlFor="pageName" className="form-label">
+                          Page Name *
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="pageName"
+                          name="pageName"
+                          value={formData.pageName}
+                          onChange={handleChange}
+                          placeholder="Enter page name"
+                        />
+                      </div>
+
+                      <div className="mb-3">
+                        <label htmlFor="pageURL" className="form-label">
+                          Page URL *
+                        </label>
+                        <input
+                          type="url"
+                          className="form-control"
+                          id="pageURL"
+                          name="pageURL"
+                          value={formData.pageURL}
+                          onChange={handleChange}
+                          placeholder="Enter page URL (e.g., https://example.com)"
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label htmlFor="pageDescription" className="form-label">
+                          Page Description
+                        </label>
+                        <div className="text-editor-container mb-3">
+                          <Editor
+                            name="pageDescription"
+                            value={formData.pageDescription}
+                            onChange={handleChange}
+                            placeholder="Enter page description..."
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={handleCloseModal}
+                >
+                  Close
+                </button>
+                {modalType === "add" ? (
+                  <Button
+                    variant="primary"
+                    onClick={savePages}
+                    disabled={disabled}
+                  >
+                    {disabled ? "Saving..." : "Save"}
+                  </Button>
+                ) : modalType === "edit" ? (
+                  <Button
+                    variant="primary"
+                    onClick={updatePage}
+                    disabled={disabled}
+                  >
+                    {disabled ? "Updating..." : "Update"}
+                  </Button>
+                ) : null}
               </div>
             </div>
-          )}
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }
 

@@ -13,7 +13,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { fetchWithAuth } from "../../api/authFetch";
+import { fetchWithAuth } from "../../utils/authFetch";
 import { useEffect, useState } from "react";
 import { links } from "../../contstants";
 
@@ -24,13 +24,10 @@ export default function Page() {
 
   const fetchDetails = async () => {
     try {
-      const response = await fetchWithAuth(
-        `${links.BASE_URL}users/dashboard`,
-        {
-          method: "GET",
-        }
-      );
-      
+      const response = await fetchWithAuth(`${links.BASE_URL}users/dashboard`, {
+        method: "GET",
+      });
+
       const data = response?.data?.data;
       setTotalUsers(data.totalUsers || 0);
       setTotalProjects(data.totalProjects || 0);
@@ -51,7 +48,12 @@ export default function Page() {
       icon: "bi-people-fill",
       color: "#4e73df",
     },
-    { title: "Projects", value: totalProjects, icon: "bi-building", color: "#1cc88a" },
+    {
+      title: "Projects",
+      value: totalProjects,
+      icon: "bi-building",
+      color: "#1cc88a",
+    },
     {
       title: "Tasks",
       value: totalTasks,
@@ -60,42 +62,36 @@ export default function Page() {
     },
   ];
 
-
-
   return (
-    <div className="dashboard-wrapper d-flex">
-      <Sidebar />
-      <div className="dashboard-main flex-grow-1">
-        <Topbar />
-        <div className="dashboard-content p-4">
-          <h3 className="dashboard-title mb-4">Dashboard Overview</h3>
+    <>
+      <h3 className="dashboard-title mb-4">Dashboard Overview</h3>
 
-          {/* Metrics */}
-          <div className="dashboard-metrics d-flex gap-3 mb-5">
-            {metrics.map((item, idx) => (
-              <div
-                key={idx}
-                className="dashboard-card"
-                style={{ borderLeft: `5px solid ${item.color}` }}
-              >
-                <div className="d-flex align-items-center justify-content-between">
-                  <div>
-                    <h6 className="text-muted">{item.title}</h6>
-                    <h4 className="text-dark">{item.value}</h4>
-                  </div>
-                  <i
-                    className={`bi ${item.icon} fs-2`}
-                    style={{ color: item.color }}
-                  ></i>
-                </div>
+      {/* Metrics */}
+      <div className="dashboard-metrics d-flex gap-3 mb-5">
+        {metrics.map((item, idx) => (
+          <div
+            key={idx}
+            className="dashboard-card"
+            style={{ borderLeft: `5px solid ${item.color}` }}
+          >
+            <div className="d-flex align-items-center justify-content-between">
+              <div>
+                <h6 className="text-muted">{item.title}</h6>
+                <h4 className="text-dark">{item.value}</h4>
               </div>
-            ))}
+              <i
+                className={`bi ${item.icon} fs-2`}
+                style={{ color: item.color }}
+              ></i>
+            </div>
           </div>
+        ))}
+      </div>
 
-          {/* Charts */}
-          <div className="dashboard-charts d-flex flex-wrap gap-4">
-            {/* Bar Chart */}
-            {/* <div className="dashboard-chart-box">
+      {/* Charts */}
+      <div className="dashboard-charts d-flex flex-wrap gap-4">
+        {/* Bar Chart */}
+        {/* <div className="dashboard-chart-box">
               <h6 className="mb-3">Monthly Users</h6>
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={barData}>
@@ -107,8 +103,8 @@ export default function Page() {
               </ResponsiveContainer>
             </div> */}
 
-            {/* Pie Chart */}
-            {/* <div className="dashboard-chart-box">
+        {/* Pie Chart */}
+        {/* <div className="dashboard-chart-box">
               <h6 className="mb-3">Business Types</h6>
               <ResponsiveContainer width="100%" height={250}>
                 <PieChart>
@@ -131,9 +127,7 @@ export default function Page() {
                 </PieChart>
               </ResponsiveContainer>
             </div> */}
-          </div>
-        </div>
       </div>
-    </div>
+    </>
   );
 }

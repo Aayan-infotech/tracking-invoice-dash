@@ -1,16 +1,14 @@
 // ProtectedRoute.js
-import { Navigate } from 'react-router-dom';
+import { Navigate } from "react-router-dom";
+import { logout } from "../store/actions/user";
 
 const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem('authToken');
-  const role = localStorage.getItem('userRole');
+  const account = localStorage.getItem("account");
+  const token = account ? JSON.parse(account).accessToken : null;
+  const role = account ? JSON.parse(account).user.role : null;
 
-
-  if (!token || role !== 'admin') {
-    // Clear any existing auth data
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('userRole');
+  if (!token || role !== "admin") {
+    logout();
     return <Navigate to="/login" replace />;
   }
   return children;

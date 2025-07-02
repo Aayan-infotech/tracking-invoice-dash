@@ -5,9 +5,11 @@ import "./Topbar.css";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import axios from "axios";
-import { links } from "../../contstants";
-
+import { images, links } from "../../contstants";
+import { useDispatch } from "react-redux";
+import { userActions } from "../../store/reducers/userReducers";
 export default function Topbar() {
+  const dispatch = useDispatch();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const handleClose = () => setShowChangePasswordModal(false);
@@ -16,14 +18,14 @@ export default function Topbar() {
 
   const [user, setUser] = useState({
     name: "Admin",
-    avatar: "./placeholder/person.png",
+    avatar: images.placeholder,
   });
   const navigate = useNavigate();
 
   useEffect(() => {
     const name = localStorage.getItem("username") || "Admin";
     const avatar =
-      localStorage.getItem("profileImage") || "./placeholder/person.png";
+      localStorage.getItem("profileImage") || images.placeholder;
     const email = localStorage.getItem("email") || "Not provided";
     const mobile = localStorage.getItem("mobile") || "Not provided";
     const username = localStorage.getItem("username") || "Not provided";
@@ -32,6 +34,7 @@ export default function Topbar() {
 
   const handleLogout = () => {
     localStorage.clear();
+    dispatch(userActions.setUserInfo(null));
     toast.success("Logout successful!");
 
     setTimeout(() => {
