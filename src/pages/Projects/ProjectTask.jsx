@@ -160,6 +160,7 @@ function ProjectTask() {
           projectId: taskData.projectId,
           taskQuantity: taskData.taskQuantity,
           description: taskData.description,
+          amount: taskData.taskAmount,
         },
         {
           headers: {
@@ -225,10 +226,10 @@ function ProjectTask() {
     try {
       setDisabled(true);
       const result = await axios.put(
-        `${links.BASE_URL}projects/tasks/${taskData.id}`,
+        `${links.BASE_URL}projects/project-tasks/${taskData.id}`,
         {
           projectId: taskData.projectId,
-          taskName: taskData.taskName,
+          taskId: taskData.taskId,
           amount: taskData.taskAmount,
           taskQuantity: taskData.taskQuantity,
           description: taskData.description,
@@ -456,6 +457,16 @@ function ProjectTask() {
                               </option>
                             ))}
                         </select>
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label">Task Amount</label>
+                        <input
+                          type="number"
+                          name="taskAmount"
+                          className="form-control"
+                          onChange={handleChange}
+                          placeholder="Enter task amount"
+                        />
                       </div>
                       <div className="mb-3">
                         <label className="form-label">Task Quantity</label>

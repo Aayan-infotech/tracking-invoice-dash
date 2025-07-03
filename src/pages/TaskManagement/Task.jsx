@@ -246,7 +246,6 @@ function Task() {
           <thead className="table-dark">
             <tr>
               <th>Task Name</th>
-              <th>Task Amount</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
@@ -256,15 +255,6 @@ function Task() {
               tasks.map((task, idx) => (
                 <tr key={task._id}>
                   <td>{task.taskName}</td>
-                  <td>
-                    {task.amount ? (
-                      <span className="text-success fw-semibold">
-                        ${task.amount.toFixed(2)}
-                      </span>
-                    ) : (
-                      <span className="text-muted">N/A</span>
-                    )}
-                  </td>
                   <td>
                     {task.status === "active" ? (
                       <span className="badge bg-success">Active</span>
@@ -355,16 +345,6 @@ function Task() {
                         />
                       </div>
                       <div className="mb-3">
-                        <label className="form-label">Task Amount</label>
-                        <input
-                          type="number"
-                          name="amount"
-                          className="form-control"
-                          onChange={handleChange}
-                          placeholder="Enter task amount"
-                        />
-                      </div>
-                      <div className="mb-3">
                         <label className="form-label">Task Description</label>
                         <textarea
                           name="description"
@@ -381,15 +361,6 @@ function Task() {
                         <div className="fw-semibold w-25">📝 Task Name:</div>
                         <div className="text-muted">
                           {taskData?.taskName || "N/A"}
-                        </div>
-                      </div>
-                      <div className="mb-3 d-flex">
-                        <div className="fw-semibold w-25">💰 Amount:</div>
-                        <div className="text-muted">
-                          $
-                          {taskData?.amount
-                            ? taskData.amount.toFixed(2)
-                            : "N/A"}
                         </div>
                       </div>
                       <div className="mb-3 d-flex">
@@ -421,16 +392,6 @@ function Task() {
                             name="taskName"
                             className="form-control"
                             value={taskData.taskName}
-                            onChange={handleChange}
-                          />
-                        </div>
-                        <div className="mb-3">
-                          <label className="form-label">Task Amount</label>
-                          <input
-                            type="number"
-                            name="amount"
-                            className="form-control"
-                            value={taskData.amount}
                             onChange={handleChange}
                           />
                         </div>
