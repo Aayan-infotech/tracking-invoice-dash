@@ -298,58 +298,6 @@ function Pages() {
         </table>
       </div>
 
-      {/* Pagination */}
-      {pagination.total_page > 1 && (
-        <nav aria-label="Page navigation">
-          <ul className="pagination justify-content-center">
-            <li
-              className={`page-item ${
-                pagination.current_page === 1 ? "disabled" : ""
-              }`}
-            >
-              <button
-                className="page-link"
-                onClick={() => handlePageChange(pagination.current_page - 1)}
-              >
-                Previous
-              </button>
-            </li>
-
-            {Array.from({ length: pagination.total_page }, (_, i) => i + 1).map(
-              (page) => (
-                <li
-                  key={page}
-                  className={`page-item ${
-                    page === pagination.current_page ? "active" : ""
-                  }`}
-                >
-                  <button
-                    className="page-link"
-                    onClick={() => handlePageChange(page)}
-                  >
-                    {page}
-                  </button>
-                </li>
-              )
-            )}
-
-            <li
-              className={`page-item ${
-                pagination.current_page === pagination.total_page
-                  ? "disabled"
-                  : ""
-              }`}
-            >
-              <button
-                className="page-link"
-                onClick={() => handlePageChange(pagination.current_page + 1)}
-              >
-                Next
-              </button>
-            </li>
-          </ul>
-        </nav>
-      )}
 
       {/* Modal */}
       {modalType && (

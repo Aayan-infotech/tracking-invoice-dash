@@ -9,8 +9,30 @@ import links from "./contstants/links.js";
 import axios from "axios";
 
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+// import { refreshAccessToken } from "./services/index/users.js";
 
 axios.defaults.baseURL = links.BASE_URL;
+
+// // Set up axios interceptors for error handling
+// axios.interceptors.response.use(
+//   (response) => response,
+//   (error) => {
+//     if (error.response && error.response.status === 401) {
+//       // call the refresh token endpoint
+//       refreshAccessToken()
+//         .then((newToken) => {
+//           axios.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
+//         })
+//         .catch((refreshError) => {
+//           console.error("Failed to refresh token:", refreshError);
+//         });
+//     } else {
+//       // Handle other errors
+//       console.error("API error:", error);
+//     }
+//     return Promise.reject(error);
+//   }
+// );
 
 const queryClient = new QueryClient({
   defaultOptions: {

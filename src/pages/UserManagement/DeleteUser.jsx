@@ -25,7 +25,7 @@ export default function DeleteUser() {
       setLoading(true);
 
       const response = await fetchWithAuth(
-        "http://18.209.91.97:3030/api/users/get-all-delete-request",
+        "http://52.20.55.193:3030/api/users/get-all-delete-request",
         {
           method: "GET",
           headers: {
@@ -63,7 +63,7 @@ export default function DeleteUser() {
     const token = userState.userInfo.accessToken;
 
     const response = await axios.put(
-      "http://18.209.91.97:3030/api/users/update-delete-request",
+      "http://52.20.55.193:3030/api/users/update-delete-request",
       {
         requestId: selectedRequest._id,
         status: actionType, // "approved" or "rejected"
