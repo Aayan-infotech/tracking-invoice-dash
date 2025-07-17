@@ -1,5 +1,5 @@
 const links = {
-  BASE_URL: 'http://52.20.55.193:3333/api/',
+  BASE_URL: 'http://98.82.228.18:3333/api/',
 };
 
 export default links;
