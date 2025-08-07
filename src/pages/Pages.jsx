@@ -406,7 +406,7 @@ function Pages() {
                         </div>
                         <div
                           className="border p-3 rounded bg-light"
-                          style={{ minHeight: "100px" }}
+                          style={{ minHeight: "100px", wordWrap: "break-word" }}
                           dangerouslySetInnerHTML={{
                             __html:
                               formData?.pageDescription ||
